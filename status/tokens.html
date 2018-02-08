@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="/javascripts/lib/Loader.js"></script>
+		<script src="/javascripts/status/tokens.js"></script>
+		<style>
+			.field {
+				font-size: 90%;
+				display: table;
+				width: 100%;
+			}
+			.field > .label {
+				display: table-cell;
+				width: 170px;
+				padding: 10px;
+				vertical-align: top;
+			}
+			.field > .value {
+				display: table-cell;
+				padding: 10px;
+			}
+			.subsection {
+				padding: 0px 20px;
+			}
+			.marginTop {
+				margin-top: 10px;
+			}
+			.field .status .error {
+				color: red;
+			}
+			.field .status .success {
+				color: green;
+			}
+			.field .warning {
+				max-width: 500px;
+				border-radius: 4px;
+				text-align: center;
+				font-size: 80%;
+				margin: 10px;
+				background: #FEE;
+				border: 1px solid #FCC;
+				padding: 10px;
+			}
+			.btnBurn {
+				font-size: 110%;
+				background: red;
+				color: white;
+			}
+
+			#AccountAddr {
+				width: 400px;
+				font-size: 110%;
+			}
+		</style>
+	</head>
+	<body><div id="Content">
+		<div class="pageTitle">
+			Token Holder UI
+		</div>
+		<div class="subsection">
+			<div class="head">Token Contract</div>
+			<div class="body fieldList">
+				<div class="field address">
+					<div class="label tipLeft" title="Address of the Token Contract">Address:</div>
+					<div class="value"></div>
+				</div>
+				<div class="field totalSupply">
+					<div class="label tipLeft" title="The total number of tokens.">totalSupply:</div>
+					<div class="value"></div>
+				</div>
+				<div class="field dividends">
+					<div class="label tipLeft" title="The total amount of dividends received.">Dividends:</div>
+					<div class="value">
+						<div class="divs"></div>
+						<div class="divHistory"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="subsection">
+			<div class="head">Account Details</div>
+			<div class="body">
+				<div class="fieldList">
+					<div class="field acctAddr">
+						<div class="label tipLeft" title="Ethereum address of the Token Holder.">Address:</div>
+						<div class="value">
+							<input type="text" class="address" placeholder="Account Address" id="AccountAddr">
+							<button id="RefreshAcct">Refresh</button>
+							<div class="error"></div>
+						</div>
+					</div>
+					<div class="field balance">
+						<div class="label tipLeft" title="The total amount of Tokens owned.">Balance:</div>
+						<div class="value"></div>
+					</div>
+				</div>
+
+				<h3>Collect Dividends</h3>
+				<div class="fieldList">
+					<div class="field owedDivs">
+						<div class="label tipLeft" title="The amount of Ether owed as dividends, collectable at any time.">Dividends Owed:</div>
+						<div class="value">
+							<span class="owedDivs"></span>
+						</div>
+					</div>
+					<div class="field collectDivs" style="display: none;">
+						<div class="label tipLeft" title="Collects all dividends owed to the currently logged in account.">Collect Dividends:</div>
+						<div class="value">
+							<div class="gasSlider"></div>
+							<button class="btnCollect marginTop">Collect</button>
+							<div class="status marginTop"></div>
+						</div>
+					</div>
+					<div class="field">
+						<div class="label tipLeft" title="Shows when this account collected dividends.">Dividend History:</div>
+						<div class="value">
+							<div class="collectHistory"></div>
+						</div>
+					</div>
+				</div>
+
+				<h3>Transfer</h3>
+				<div class="fieldList">
+					<div class="field transfer" style="display: none;">
+						<div class="label tipLeft" title="Transfers tokens from the Token Holder to another Ethereum account.">Transfer:</div>
+						<div class="value">
+							<div>
+								To: <input type=text class="transferTo" placeholder="address">
+							</div>
+							<div class="marginTop">
+								Amount: <input type=text class="transferAmt" placeholder="amount"> Penny
+							</div>
+							<div class="gasSlider marginTop"></div>
+							<button class="btnTransfer marginTop">Transfer</button>
+							<div class="status marginTop"></div>
+						</div>
+					</div>
+					<div class="field">
+						<div class="label tipLeft" title="Shows events for tokens transferred In and Out.">Transfer History:</div>
+						<div class="value">
+							<div class="transferHistory"></div>
+						</div>
+					</div>
+				</div>
+
+				<h3>Burn</h3>
+				<div class="fieldList">
+					<div class="field burn" style="display: none;">
+						<div class="label tipLeft" title="Burns tokens for .5 Ether each.<br><b>Once burned, tokens are gone forever.</b>">Burn Tokens:</div>
+						<div class="value">
+							<div>
+								Amount: <input type=text class="burnAmt"> Penny
+							</div>
+							<div class="gasSlider marginTop"></div>
+							<div class="warning">
+								This will burn tokens, sending a <b>.5 Ether refund for each token burned.</b><br>
+								Once tokens are burned, they are gone forever.<br>
+								If you wish to burn your entire balance, pass in a large number.<br>
+								<button class="btnBurn marginTop">Burn</button>
+							</div>
+							<div class="status marginTop"></div>
+						</div>
+					</div>
+					<div class="field">
+						<div class="label tipLeft" title="Shows events for tokens minted or burned.">Mint History:</div>
+						<div class="value">
+							<div class="mintHistory"></div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div></body>
+</html>

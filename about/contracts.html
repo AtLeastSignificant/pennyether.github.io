@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="/javascripts/lib/Loader.js"></script>
+		<style>
+			.toc {
+				font-size: 85%;
+				position: fixed;
+				padding: 0px 0px 0px 0px;
+				width: 200px;
+				background: #F0F0F0;
+				height: 100%;
+				border-right: 1px solid #AAA;
+			}
+			.toc .header {
+				text-align: center;
+				font-weight: bold;
+				padding: 2px 4px;
+				margin-top: 15px;
+				margin-bottom: 0px;
+				border-bottom: 1px dotted #AAA;
+			}
+			.toc a {
+				color: black;
+				text-decoration: none;
+			}
+				.toc .item .head {
+					padding: 2px 0px 2px 15px;
+					margin-top: 2px;
+					transition: background .2s;
+				}
+					.toc .item .head:hover {
+						background: #DDD;
+						transition: background .2s;
+					}
+					.toc .item.on .head {
+						font-weight: bold;
+						text-shadow: 1px 1px 0px rgba(255, 255, 255, .4);
+						background: #CCC;
+						transition: background .2s;
+					}
+
+			.main {
+				padding-left: 220px;
+				padding-right: 20px;
+			}
+
+			.fieldList {
+				display: table;
+				box-sizing: border-box;
+				width: 100%;
+				padding: 15px 15px 0px 15px;
+				margin-top: 10px;
+			}
+			.fieldList > .field {
+				display: table-row;
+			}
+			.fieldList > .field:nth-child(odd) {
+				background: #F0F0F0;
+			}
+			.fieldList > .field > .label {
+				display: table-cell;
+				white-space: nowrap;
+				vertical-align: top;
+				padding: 10px;
+				padding-right: 40px;
+			}
+			.fieldList > .field > .value {
+				display: table-cell;
+				padding: 10px;
+				width: 100%;
+			}
+
+			.summary {
+				margin: 15px;
+				padding: 10px;
+				font-size: 90%;
+				background: rgba(0,128,0,.15);
+				border-radius: 5px;
+			}
+
+			.note {
+				display: inline-block;
+				text-align: center;
+				font-size: 75%;
+				background: #CCC;
+				padding: 5px;
+				border-radius: 3px;
+			}
+
+			.pending {
+				color: gray;
+				font-style: italic;
+			}
+		</style>
+		<script>
+		var loadedHash = window.location.hash;
+		Loader.onPageLoad.then(()=>{
+			(function goToLoadedHash(){
+				if (!loadedHash) return;
+				goToHash(loadedHash);
+			}());
+
+			function goToHash(hash) {
+				const $hash = $(hash);
+				if ($hash.length==0) return;
+				doScrolling($hash.position().top-90, 500);
+			}
+
+			// all # links should scroll to target
+			$("a[href^='#']").click(function(e){
+				e.preventDefault();
+				goToHash($(e.currentTarget).attr("href"));
+			});
+
+			// add "anchor" data to .item and .subitem
+			$(".toc .item").each((i, el)=>{
+				$(el).data("anchor", $(el).find("a").eq(0).attr("href"));
+				$(el).find(".body a").each((i, sublink)=>{
+					$(sublink).find(".subitem").data("anchor", $(sublink).attr("href"));
+				});
+			});
+
+			// adds "on" class to the last of $items which is scrolled to.
+			function activateLastItemScrolledTo($items) {
+				const height = window.innerHeight;
+				const top = window.pageYOffset;
+				$items.removeClass("on");
+				for (var i = $items.length-1; i>=0; i--) {
+					const $item = $items.eq(i);
+					const $anchor = $($item.data("anchor"));
+					if (!$anchor.length) continue;
+
+					if ($anchor[0].getBoundingClientRect().top <= 105) {
+						$item.addClass("on");
+						break;
+					}
+				}
+			}
+
+			// on scroll, set ".on" for proper item and subitem
+			const $items = $(".toc .item");
+			$(window).on("scroll", function(){
+				activateLastItemScrolledTo($items);
+			});
+
+			$(window).scroll();
+		});
+		Loader.require("comp", "tr", "mc", "dice")
+		.then(function(comp, tr, mc, dice){
+			$(".comp-addr").append(util.$getAddrLink(comp.address));
+			util.bindToElement(comp.token().then(util.$getAddrLink), $(".token-addr"), true);
+			util.bindToElement(comp.locker().then(util.$getAddrLink), $(".locker-addr"), true);
+			$(".tr-addr").append(util.$getAddrLink(tr.address));
+			$(".mc-addr").append(util.$getAddrLink(mc.address));
+			$(".dice-addr").append(util.$getAddrLink(dice.address));
+		});
+		</script>
+	</head>
+	<body><div id="Content">
+		<div class="toc">
+			<div class="header">Contracts</div>
+			<div class="item">
+				<a href="#comptroller">
+					<div class="head">Comptroller</div>
+				</a>
+			</div>
+			<div class="item">
+				<a href="#dividend-token">
+					<div class="head">DividendToken</div>
+				</a>
+			</div>
+			<div class="item">
+				<a href="#dividend-token-locker">
+					<div class="head">DividendTokenLocker</div>
+				</a>
+			</div>
+			<div class="item">
+				<a href="#treasury">
+					<div class="head">Treasury</div>
+				</a>
+			</div>
+			<div class="item">
+				<a href="#main-controller">
+					<div class="head">MainController</div>
+				</a>
+			</div>
+			<div class="item">
+				<a href="#penny-auction">
+					<div class="head">PennyAuction</div>
+				</a>
+			</div>
+			<div class="item">
+				<a href="#instadice">
+					<div class="head">InstaDice</div>
+				</a>
+			</div>
+		</div>
+		<div class="main">
+			<div class="section pageTitle">
+				Contracts, Tests, and Audits
+			</div>
+			<div>
+				On this page you'll find information on our deployed contracts.<br>
+				To view the current state of each contract, you can view the <a href="/status/system.html" target="_blank">system status page</a>.
+			</div>
+
+			<div>
+				<a id="comptroller"></a>
+				<h3>Comptroller</h3>
+				<div class="summary">
+					The Comptroller runs the CrowdSale. After the CrowdSale, it sends bankroll to the Treasury, and is in charge of burning tokens for a refund.
+				</div>
+				<div class="fieldList">
+					<div class="field">
+						<div class="label">Address:</div>
+						<div class="value comp-addr"></div>
+					</div>
+					<div class="field">
+						<div class="label">Status:</div>
+						<div class="value">
+							<a href="/status/system.html#comptroller" target="_blank">Comptroller Status</a>
+						</div>
+					</div>
+					<div class="field">
+						<div class="label">More Info:</div>
+						<div class="value">
+							<a href="https://github.com/pennyether/contracts#comptroller" target="_blank">Technical Documentation</a>
+						</div>
+					</div>
+					<div class="field">
+						<div class="label">Source Code:</div>
+						<div class="value">
+							<a href="https://github.com/pennyether/contracts/blob/master/contracts/Comptroller.sol" target="_blank">Source Code</a>
+							<br>
+							<a href="http://htmlpreview.github.io/?https://github.com/pennyether/contracts/blob/master/tests/results/Comptroller.js.html" target="_blank">Test Results</a>
+							(<a href="https://github.com/pennyether/contracts/blob/master/tests/Comptroller.js" target="_blank">Test File</a>)
+						</div>
+					</div>
+					<div class="field">
+						<div class="label">Audits:</div>
+						<div class="value"><div class="pending">pending</div></div>
+					</div>
+				</div>
+			</div>
+
+			<div>
+				<a id="dividend-token"></a>
+				<h3>DividendToken</h3>
+				<div class="summary">
+					The DividendToken is an ERC20 Token that can distribute dividends to Token Holders at any time. The totalSupply is fixed, and only goes down if/when Token Holders decide to burn tokens. All tokens are backed by at least .5 Ether held in the Treasury.
+				</div>
+				<div class="fieldList">
+					<div class="field">
+						<div class="label">Address:</div>
+						<div class="value token-addr"></div>
+					</div>
+					<div class="field">
+						<div class="label">Status:</div>
+						<div class="value">
+							<a href="/status/system.html#token">Token Status</a>
+							<br>
+							<a href="/status/token.html">Token UI</a>
+						</div>
+					</div>
+					<div class="field">
+						<div class="label">More Info:</div>
+						<div class="value">
+							<a href="/ico/whitepaper.html#token-contract" target="_blank">Whitepaper</a>
+							<br>
+							<a href="https://github.com/pennyether/contracts#dividendtoken" target="_blank">Technical Documentation</a>
+						</div>
+					</div>
+					<div class="field">
+						<div class="label">Source Code:</div>
+						<div class="value">
+							<a href="https://github.com/pennyether/contracts/blob/master/contracts/DividendToken.sol" target="_blank">Source Code</a>
+							<br>
+							<a href="http://htmlpreview.github.io/?https://github.com/pennyether/contracts/blob/master/tests/results/DividendToken.js.html" target="_blank">Test Results</a>
+							(<a href="https://github.com/pennyether/contracts/blob/master/tests/DividendToken.js" target="_blank">Test File</a>)
+						</div>
+					</div>
+					<div class="field">
+						<div class="label">Audits:</div>
+						<div class="value"><div class="pending">pending</div></div>
+					</div>
+				</div>
+			</div>
+
+			<div>
+				<a id="dividend-token-locker"></a>
+				<h3>DividendTokenLocker</h3>
+				<div class="summary">
+					The TokenLocker holds 10% of all tokens, at all times, even if/when tokens are burned. Tokens held in this contract cannot be transferred or burned -- only their dividends can be collected. This contract ensures PennyEther developers always have exactly 10% ownership in PennyEther, and are aligned with Token Holders' interest: to generate more revenue.
+				</div>
+				<div class="fieldList">
+					<div class="field">
+						<div class="label">Address:</div>
+						<div class="value locker-addr"></div>
+					</div>
+					<div class="field">
+						<div class="label">Status:</div>
+						<div class="value">
+							<a href="/status/system.html#token">DividendTokenLocker Status</a>
+						</div>
+					</div>
+					<div class="field">
+						<div class="label">More Info:</div>
+						<div class="value">
+							<a href="/ico/whitepaper.html#tokenlocker">Whitepaper</a>
+							<br>
+							<a href="https://github.com/pennyether/contracts#tokenlocker" target="_blank">Technical Documentation</a>
+						</div>
+					</div>
+					<div class="field">
+						<div class="label">Source Code:</div>
+						<div class="value">
+							<a href="https://github.com/pennyether/contracts/blob/master/contracts/DividendTokenLocker.sol" target="_blank">Source Code</a>
+						</div>
+					</div>
+					<div class="field">
+						<div class="label">Audits:</div>
+						<div class="value"><div class="pending">pending</div></div>
+					</div>
+				</div>
+			</div>
+
+			<div>
+				<a id="treasury"></a>
+				<h3>Treasury</h3>
+				<div class="summary">
+					The Treasury holds the bankroll, and only ever sends Ether to fund games (limited by a daily amount), or to pay Token Holders .5 Ether per Token burned. The bankroll is set after the ICO, by the Comptroller.
+				</div>
+				<div class="fieldList">
+					<div class="field">
+						<div class="label">Address:</div>
+						<div class="value tr-addr"></div>
+					</div>
+					<div class="field">
+						<div class="label">Status:</div>
+						<div class="value">
+							<a href="/status/treasury.html">Treasury UI</a>
+							<br>
+							<a href="/status/system.html#treasury">Treasury Status</a>
+						</div>
+					</div>
+					<div class="field">
+						<div class="label">More Info:</div>
+						<div class="value">
+							<a href="/ico/whitepaper.html#treasury">Whitepaper</a>
+							<br>
+							<a href="https://github.com/pennyether/contracts#treasury" target="_blank">Technical Documentation</a>
+						</div>
+					</div>
+					<div class="field">
+						<div class="label">Source Code:</div>
+						<div class="value">
+							<a href="https://github.com/pennyether/contracts/blob/master/contracts/Treasury.sol" target="_blank">Source Code</a>
+							<br>
+							<a href="http://htmlpreview.github.io/?https://github.com/pennyether/contracts/blob/master/tests/results/Treasury.js.html" target="_blank">Test Results</a>
+							(<a href="https://github.com/pennyether/contracts/blob/master/tests/Treasury.js" target="_blank">Test File</a>)
+						</div>
+					</div>
+					<div class="field">
+						<div class="label">Audits:</div>
+						<div class="value"><div class="pending">pending</div></div>
+					</div>
+				</div>
+			</div>
+
+			<div>
+				<a id="main-controller"></a>
+				<h3>MainController</h3>
+				<div class="summary">
+					The MainController keeps PennyEther running autonomously. It is the only contract that can get funds from the Treasury, and uses those funds to stake PennyAuctions and InstaDice. It also allows for users to run Tasks, and in return pays them rewards.
+				</div>
+				<div class="fieldList">
+					<div class="field">
+						<div class="label">Address:</div>
+						<div class="value mc-addr"></div>
+					</div>
+					<div class="field">
+						<div class="label">Status:</div>
+						<div class="value">
+							<a href="/status/system.html#maincontroller">MainController Status</a>
+							<br>
+							<a href="/game/tasks.html">Tasks Page</a>
+						</div>
+					</div>
+					<div class="field">
+						<div class="label">More Info:</div>
+						<div class="value">
+							<a href="/ico/whitepaper.html#maincontroller">Whitepaper</a>
+							<br>
+							<a href="https://github.com/pennyether/contracts#maincontroller" target="_blank">Technical Documentation</a>
+						</div>
+					</div>
+					<div class="field">
+						<div class="label">Source Code:</div>
+						<div class="value">
+							<a href="https://github.com/pennyether/contracts/blob/master/contracts/MainController.sol" target="_blank">Source Code</a>
+							<br>
+							<a href="http://htmlpreview.github.io/?https://github.com/pennyether/contracts/blob/master/tests/results/MainController.js.html" target="_blank">Test Results</a>
+							(<a href="https://github.com/pennyether/contracts/blob/master/tests/MainController.js" target="_blank">Test File</a>)
+						</div>
+					</div>
+					<div class="field">
+						<div class="label">Audits:</div>
+						<div class="value"><div class="pending">pending</div></div>
+					</div>
+				</div>
+			</div>
+
+			<div>
+				<a id="penny-auction"></a>
+				<h3>PennyAuction</h3>
+				<div class="summary">
+					A Penny Auction is a simple game where a prize is staked, and the last person to bid (by paying a small, fixed fee) will win the prize. Each new bid extends the auction by a few blocks.
+				</div>
+				<div class="fieldList">
+					<div class="field">
+						<div class="label">Status:</div>
+						<div class="value">
+							<div style='margin-bottom: 10px;'>
+								<div class="note">
+									Multiple PennyAuction instances exist. Use the link below to view individual ones.
+								</div>
+							</div>
+							<a href="/games/viewauction.html">View Auction</a>
+						</div>
+					</div>
+					<div class="field">
+						<div class="label">More Info:</div>
+						<div class="value">
+							<a href="/ico/whitepaper.html#games-penny-auctions">Whitepaper</a>
+							<br>
+							<a href="https://github.com/pennyether/contracts#pennyauction" target="_blank">Technical Documentation</a>
+						</div>
+					</div>
+					<div class="field">
+						<div class="label">Source Code:</div>
+						<div class="value">
+							<a href="https://github.com/pennyether/contracts/blob/master/contracts/PennyAuction.sol" target="_blank">Source Code</a>
+							<br>
+							<a href="http://htmlpreview.github.io/?https://github.com/pennyether/contracts/blob/master/tests/results/PennyAuction.js.html" target="_blank">Test Results</a>
+							(<a href="https://github.com/pennyether/contracts/blob/master/tests/PennyAuction.js" target="_blank">Test File</a>)
+						</div>
+					</div>
+					<div class="field">
+						<div class="label">Audits:</div>
+						<div class="value"><div class="pending">pending</div></div>
+					</div>
+				</div>
+			</div>
+
+			<div style='padding-bottom: 400px'>
+				<a id="instadice"></a>
+				<h3>InstaDice</h3>
+				<div class="summary">
+					The InstaDice contract allows for users to wager on a customizable dice roll and immediately see their results the moment their transaction is mined. Rolls are automatically paid the next time any user rolls, or the user can redeem manually.
+				</div>
+				<div class="fieldList">
+					<div class="field">
+						<div class="label">Address:</div>
+						<div class="value dice-addr"></div>
+					</div>
+					<div class="field">
+						<div class="label">Status:</div>
+						<div class="value">
+							<a href="/status/games.html#instadice">InstaDice Status</a>
+							<br>
+							<a href="/games/viewroll.html#1">View Roll</a>
+						</div>
+					</div>
+					<div class="field">
+						<div class="label">More Info:</div>
+						<div class="value">
+							<a href="/ico/whitepaper.html#games-instadice">Whitepaper</a>
+							<br>
+							<a href="https://github.com/pennyether/contracts#instadice" target="_blank">Technical Documentation</a>
+						</div>
+					</div>
+					<div class="field">
+						<div class="label">Source Code:</div>
+						<div class="value">
+							<a href="https://github.com/pennyether/contracts/blob/master/contracts/InstaDice.sol" target="_blank">Source Code</a>
+							<br>
+							<a href="http://htmlpreview.github.io/?https://github.com/pennyether/contracts/blob/master/tests/results/InstaDice.js.html" target="_blank">Test Results</a>
+							(<a href="https://github.com/pennyether/contracts/blob/master/tests/InstaDice.js" target="_blank">Test File</a>)
+						</div>
+					</div>
+					<div class="field">
+						<div class="label">Audits:</div>
+						<div class="value"><div class="pending">pending</div></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div></body>
+</html>

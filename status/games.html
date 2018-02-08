@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="/javascripts/lib/Loader.js"></script>
+		<script src="/javascripts/status/games.js"></script>
+		<style>
+			.stats > div {
+				margin-bottom: 5px;
+			}
+			.definedAuction {
+				border: 1px solid #CCC;
+				background: #FAFAFA;
+				padding: 5px;
+				margin: 10px 0px;
+			}
+				.definedAuction .name {
+					text-align: center;
+					border-bottom: 1px dotted #AAA;
+					font-weight: bold;
+					padding: 4px 0px 4px 6px;
+				}
+
+			.field {
+				font-size: 90%;
+				display: table;
+				width: 100%;
+			}
+			.field > .label {
+				display: table-cell;
+				width: 200px;
+				padding: 8px;
+				vertical-align: top;
+			}
+			.field > .value {
+				display: table-cell;
+				padding: 8px;
+			}
+
+			.head > .refresh {
+				font-size: 70%;
+				letter-spacing: initial;
+				color: blue;
+				cursor: pointer;
+				padding-left: 5px;
+			}
+		</style>
+	</head>
+	<body><div id="Content">
+		<div class="pageTitle">
+			Game Statuses
+		</div>
+		<div style="margin: 0px 30px;">
+			<div id="PennyAuctions" class="subsection">
+				<div class="head">
+					Penny Auctions
+					<span class="refresh">refresh</span>
+				</div>
+				<div class="body">
+					<h3>Stats</h3>
+					<div class="stats">
+						<div class="field">
+							<div class="label">
+								<span title="This contract can be upgraded. This identifies which version is currently in use.">
+									Version
+								</span>
+							</div>
+							<div class="value">
+								<span id="PacVersion"></span>
+							</div>
+						</div>
+						<div class="field">
+							<div class="label">
+								<span title="The number of auctions that are currently ongoing (in this version).">
+									Active Auctions
+								</span>
+							</div>
+							<div class="value">
+								<span id="PacNumActiveAuctions"></span>
+							</div>
+						</div>
+						<div class="field">
+							<div class="label">
+								<span title="The number of auctions that have been completed (in this version).">
+									Ended Auctions
+								</span>
+							</div>
+							<div class="value">
+								<span id="PacNumEndedAuctions"></span>
+							</div>
+						</div>
+						<div class="field">
+							<div class="label">
+								<span title="The total amount of ETH paid out as prizes (in this version).">
+									Total Prize Money
+								</span>
+							</div>
+							<div class="value">
+								<span id="PacTotalPrizes"></span>
+							</div>
+						</div>
+						<div class="field">
+							<div class="label">
+								<span title="The total amount of Penny Auction fees (revenue) that has been sent to the Treasury (in this version). Note: It is possible (but not likely) that Penny Auction fees are collected from outside the Penny Auction Controller, so this value may not be entirely accurate.">
+									Total Fees Collected
+								</span>
+							</div>
+							<div class="value">
+								<span id="PacTotalFees"></span>
+							</div>
+						</div>
+						<div class="field">
+							<div class="label">
+								Logs
+							</div>
+							<div class="value">
+								<div id="PacLogs"></div>
+							</div>
+						</div>
+					</div>
+
+					<h3>
+						<span title="Penny Auctions are all pre-defined by an admin. MainController will periodically look for any enabled pre-defined auctions that are completed and will restart them by creating a new auction instance. This ensures there are always Penny Auctions running.">Pre-Defined Auctions</span>
+					</h3>
+					<div class="definedAuctions">
+						<div class="definedAuction definedAuctionTemplate" style="display: none;">
+							<div class="name">Auction 1</div>
+							<div class="isEnabled field">
+								<div class="label tipLeft dontTip" title="Whether or not a new instance of this Penny Auction will be created when the current one, if any, ends.">
+									isEnabled:
+								</div>
+								<div class="value"></div>
+							</div>
+							<div class="auction field">
+								<div class="label tipLeft dontTip" title="The existing instance of this pre-defined auction, if any.">
+									Auction:
+								</div>
+								<div class="value"></div>
+							</div>
+							<div class="initialPrize field">
+								<div class="label tipLeft dontTip" title="The initial prize staked when this auction is created.">
+									Initial Prize:
+								</div>
+								<div class="value"></div>
+							</div>
+							<div class="bidPrice field">
+								<div class="label tipLeft dontTip" title="The cost to bid on this auction and become the current winner.">
+									Bid Price:
+								</div>
+								<div class="value"></div>
+							</div>
+							<div class="bidIncr field">
+								<div class="label tipLeft dontTip" title="After each bid, the prize is increased or decreased by this amount.">
+									Bid Increment:
+								</div>
+								<div class="value"></div>
+							</div>
+							<div class="bidAddBlocks field">
+								<div class="label tipLeft dontTip" title="The number of blocks that the auction is extended by each time someone bids.">
+									Bid Add Blocks:
+								</div>
+								<div class="value"></div>
+							</div>
+							<div class="initialBlocks field">
+								<div class="label tipLeft dontTip" title="The number of blocks that the auction starts with when initialized.">
+									Initial Blocks:
+								</div>
+								<div class="value"></div>
+							</div>
+							<div class="canBeStarted field" style="border-top: 1px dotted #DDD;">
+								<div class="label tipLeft dontTip" title="Whether or not this auction can be started right now.">
+									Can Be Started:
+								</div>
+								<div class="value"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<a id="instadice"></a>
+			<div id="InstaDice" class="subsection">
+				<div class="head">
+					InstaDice
+					<span class="refresh">refresh</span>
+				</div>
+				<div class="body">
+					<h3>Settings</h3>
+					<div class="stats">
+						<div class="field">
+							<div class="label">
+								<span title="The house fee.">
+									House Fee
+								</span>
+							</div>
+							<div class="value">
+								<span id="DiceHouseFee"></span>
+							</div>
+						</div>
+						<div class="field">
+							<div class="label">
+								<span title="The minimum allowed bet (ignoring bankroll constraints).">
+									Min Bet
+								</span>
+							</div>
+							<div class="value">
+								<span id="DiceMinBet"></span>
+							</div>
+						</div>
+						<div class="field">
+							<div class="label">
+								<span title="The maximum allowed bet (ignoring bankroll constraints).">
+									Max Bet
+								</span>
+							</div>
+							<div class="value">
+								<span id="DiceMaxBet"></span>
+							</div>
+						</div>
+						<div class="field">
+							<div class="label">
+								<span title="The minimum allowed 'roll number' (ignoring bankroll constraints).">
+									Min Number
+								</span>
+							</div>
+							<div class="value">
+								<span id="DiceMinNumber"></span>
+							</div>
+						</div>
+						<div class="field">
+							<div class="label">
+								<span title="The maximum allowed 'roll number' (ignoring bankroll constraints).">
+									Max Number
+								</span>
+							</div>
+							<div class="value">
+								<span id="DiceMaxNumber"></span>
+							</div>
+						</div>
+					</div>
+
+					<h3>Stats</h3>
+					<div class="stats">
+						<div class="field">
+							<div class="label">
+								<span title="This contract can be upgraded. This identifies which version is currently in use.">
+									Version
+								</span>
+							</div>
+							<div class="value">
+								<span id="DiceVersion"></span>
+							</div>
+						</div>
+						<div class="field">
+							<div class="label">
+								<span title="The amount of Ether held in this contract.">
+									Balance
+								</span>
+							</div>
+							<div class="value">
+								<span id="DiceBalance"></span>
+							</div>
+						</div>
+						<div class="field">
+							<div class="label">
+								<span title="The amount of Ether funded. Any balance above this is profit.">
+									Funding
+								</span>
+							</div>
+							<div class="value">
+								<span id="DiceMinBankroll"></span>
+							</div>
+						</div>
+						<div class="field">
+							<div class="label">
+								<span title="The bankroll of InstaDice. Will not allow bets that could cause this to go below zero. This value can be increased/decreased by the Admin.">
+									Bankroll
+								</span>
+							</div>
+							<div class="value">
+								<span id="DiceBankroll"></span>
+							</div>
+						</div>
+						<div class="field">
+							<div class="label">
+								<span title="The total amount of rolls.">
+									Total Rolls
+								</span>
+							</div>
+							<div class="value">
+								<span id="DiceTotalRolls"></span>
+							</div>
+						</div>
+						<div class="field">
+							<div class="label">
+								<span title="The total amount wagered.">
+									Total Wagered
+								</span>
+							</div>
+							<div class="value">
+								<span id="DiceTotalWagered"></span>
+							</div>
+						</div>
+						<div class="field">
+							<div class="label">
+								<span title="The total amount won by players.">
+									Total Won
+								</span>
+							</div>
+							<div class="value">
+								<span id="DiceTotalWon"></span>
+							</div>
+						</div>
+						<div class="field">
+							<div class="label">
+								<span title="The house take: (Total Wagered) - (Total Won)">
+									Total Profit
+								</span>
+							</div>
+							<div class="value">
+								<span id="DiceTotalProfit"></span>
+							</div>
+						</div>
+						<div class="field">
+							<div class="label">
+								<span title="Unresolved rolls occur when multiple rolls occur on the same block. Unresolved rolls, once resolved, will either pay out the winner or increase the bankroll. They can be resolved via the 'admin' interface, by anyone.">
+									Unresolved Rolls
+								</span>
+							</div>
+							<div class="value">
+								<span id="DiceNumUnresolved"></span>
+							</div>
+						</div>
+						<div class="field">
+							<div class="label">
+								Logs
+							</div>
+							<div class="value">
+								<div id="DiceLogs"></div>
+							</div>
+						</div>						
+					</div>
+				</div>
+			</div>
+		</div>
+	</div></body>
+</html>

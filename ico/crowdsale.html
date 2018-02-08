@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="/javascripts/lib/Loader.js"></script>
+		<script src="/javascripts/ico/crowdsale.js"></script>
+	</head>
+	<body><div id="Content">
+		<style>
+			#Content {
+				background: linear-gradient(to bottom, black 0%, #555 100%);
+			}
+			.header {
+				color: #CCC;
+				padding: 30px 0px 30px 0px;
+				margin-bottom: 0px;
+				text-align: center;
+			}
+			.header .title {
+				color: white;
+				text-shadow: 0px 0px 20px lime;
+				text-align: center;
+				font-size: 200%;
+				letter-spacing: .2em;
+			}
+
+			
+			.links .label {
+				color: #EEE;
+				font-size: 80%;
+				letter-spacing: .1em;
+				text-shadow: 2px 2px 1px rgba(0,0,0, .5);
+			}
+			.links a {
+				letter-spacing: .1em;
+				margin-top: 10px;
+				padding: 2px 5px;
+				display: inline-block;
+				border-radius: 3px;
+				background: linear-gradient(to bottom, rgba(200,200,200,.5) 0%, rgba(255,255,255,.5) 100%);
+				color: navy;
+				text-decoration: none;
+				box-shadow: 0px 0px 5px 0px blue;
+				transition: color .4s, box-shadow .4s;
+				margin: 0px 5px;
+			}
+			.links a:hover {
+				color: blue;
+				text-decoration: underline;
+				box-shadow: 0px 0px 10px 1px blue;
+			}
+
+			.header .countdown {
+				display: inline-block;
+				margin-top: 30px;
+			}
+			.header .countdown > div {
+				display: inline-block;
+				vertical-align: middle;
+			}
+			.header .countdown .summary {
+				display: block;
+				font-size: 90%;
+				color: rgba(0,255,0,.8);
+				text-shadow: 1px 1px 1px black;
+				padding-bottom: 10px;
+				border-bottom: 1px dotted rgba(255,255,255,.1);
+			}
+			.header .countdown .value,
+			.header .countdown .colon {
+				font-size: 450%;
+			}
+			.header .countdown .value {
+				text-shadow: 0px 0px 10px green;
+			}
+			.header .countdown .colon {
+				text-shadow: 2px 2px 2px rgba(0,0,0,.2);
+				opacity: .8;
+			}
+			.header .countdown .label {
+				margin-top: -5px;
+				font-size: 80%;
+				text-shadow: 1px 1px black;
+			}
+
+			.features {
+				box-sizing: border-box;
+				width: 80%;
+				display: table;
+				margin: 20px auto;
+				font-size: 90%;
+			}
+			.features .left,
+			.features .middle,
+			.features .right {
+				padding: 0px 10px;
+				display: table-cell;
+				vertical-align: top;
+				width: 33%;
+			}
+			.features .ctnr {
+				text-align: left;
+				display: inline-block;
+			}
+			.features .ctnr-title {
+				color: #EEE;
+				text-align: center;
+				letter-spacing: .25em;
+				text-shadow: 2px 2px 2px black;
+				padding-bottom: 5px;
+				border-bottom: 1px dotted #444;
+				margin-bottom: 8px;
+			}
+			.header .bullet {
+				white-space: nowrap;
+				margin: 4px 0px;
+				text-shadow: 1px 1px 0px black;
+			}
+			.header .bullet:before {
+				color: #777;
+				display: inline-block;
+				content: '○';
+				vertical-align: top;
+				margin-right: .5em;
+			}
+
+			.progress {
+				background: linear-gradient(to bottom, rgba(128,128,128,.8) 0%, rgba(128,128,128,.3) 100%);
+				box-shadow: 3px 3px 3px 0px rgba(0,0,0,.2);
+				padding: 15px;
+				border-radius: 10px;
+				margin: 20px 60px;
+			}
+			.progress .inner {
+				position: relative;
+				border: 1px inset gray;
+				border-radius: 8px;
+				background: #AAA;
+				height: 50px;
+				padding: 1px;
+			}
+			.progress .inner .amt {
+				box-sizing: border-box;
+				position: relative;
+				height: 100%;
+				width: 0%;
+				opacity: 0;
+				border-radius: 8px;
+				border: 1px outset gray;
+				box-shadow: 0px 0px 15px 2px rgba(0,255,0,.5);
+				background: green;
+				transition: width 3s, opacity 1s;
+			}
+			
+			.stat {
+				display: inline-block;
+				text-align: center;
+				background: rgba(255,255,255,.2);
+				border-radius: 4px;
+				border: 1px inset #999;
+				padding: 2px 4px;
+			}
+			.stat.reached {
+				background: rgba(128,255,128,.2);
+			}
+			.stat .label {
+				font-size: 80%;
+				color: #AAA;
+				text-shadow: 1px 1px 1px rgba(0,0,0,.3);
+			}
+
+			.send {
+				padding: 0px;
+				margin: 0px 60px;
+			}
+
+			.contributeText {
+				display: inline-block;
+				font-size: 150%;
+				padding: 2px 5px;
+				background: rgba(0, 128, 0, .5);
+				border-radius: 5px;
+				box-shadow: 0px 0px 10px 0px lime;
+			}
+
+			.requirements {
+				border-top: 1px dotted rgba(255,255,255,.2);
+				margin-top: 15px;
+				padding: 0px;
+				font-size: 90%;
+			}
+			.requirements a {
+				color: white;
+			}
+			.requirement {
+				margin: 10px 0px;
+			}
+			.requirement input {
+				float: left;
+				margin-right: 5px;
+			}
+
+			.contribute {
+				background: linear-gradient(to bottom, rgba(128,128,128,.8) 0%, rgba(128,128,128,.3) 100%);
+				box-shadow: 3px 3px 3px 0px rgba(0,0,0,.2);
+				padding: 15px;
+				border-radius: 10px;
+				margin-left: 20px;
+				border: 1px outset #888;
+			}
+			.contribute .choose {
+				font-size: 110%;
+				text-shadow: 1px 1px 1px rgba(0,0,0,.5);
+				color: rgb(44,190,44);
+			}
+				.contribute .txtEther {
+					background: rgba(255,255,255,.1);
+					text-shadow: 1px 1px 1px rgba(255, 255, 255, .2);
+					border: none;
+					font-weight: bold;
+					border-bottom: 1px dotted #999;
+					text-align: center;
+					font-size: 120%;
+					width: 70px;
+				}
+				.contribute .numTokens {
+					color: black;
+					font-weight: bold;
+					text-shadow: 1px 1px 1px rgba(255, 255, 255, .2);
+				}
+				.contribute .gasSlider {
+					margin: 10px 0px;
+				}
+				.contribute .GasPriceSlider .wait {
+					opacity: .7;
+					text-shadow: 1px 1px 1px rgba(0,0,0,.4);
+					color: #AAA;
+				}
+				.contribute .GasPriceSlider .wait.fast {
+					color: rgb(44,190,44);
+				}
+				.contribute .GasPriceSlider .wait.slow {
+					color: rgb(208,110,110);
+				}
+			.contribute .refund {
+				font-size: 80%;
+				font-style: italic;
+			}
+			.contribute .btnWrap {
+				margin-top: 10px;
+			}
+			.contribute button {
+				margin-top: 5px;
+				font-size: 150%;
+				padding: 4px 40px;
+				background: green;
+				color: white;
+				cursor: pointer;
+			}
+			.contribute button.disabled {
+				background: #888;
+				cursor: not-allowed;
+			}
+			.contribute .txStatus {
+				color: #333;
+				margin-top: 10px;
+				font-size: 90%;
+			}
+			.contribute .txStatus .success {
+				color: green;
+			}
+			.contribute .txStatus .failure {
+				color: maroon;
+			}
+			.contribute .TxStatus {
+				border-radius: 4px;
+				border-style: inset;
+				background: #CCC;
+			}
+		</style>
+		<div class="header">
+			<div class="title">CrowdSale</div>
+			<div class="features">
+				<div class="left">
+					<div class="ctnr">
+						<div class="ctnr-title">PennyEther</div>
+						<div class="bullet">Autonomous Blockchain Gaming</div>
+						<div class="bullet">Two games, with more on the way</div>
+						<div class="bullet">Audited, open-sourced, secure</div>
+						<div class="bullet">Whitepaper</div>
+					</div>
+				</div>
+				<div class="middle">
+					<div class="ctnr">
+						<div class="ctnr-title">Tokens</div>
+						<div class="bullet">Get 100% of profits</div>
+						<div class="bullet">Dividends distributed on-demand</div>
+						<div class="bullet">Token Holder UI</div>
+						<div class="bullet">Can be burned for .5 Ether</div>
+					</div>
+				</div>
+				<div class="right">
+					<div class="ctnr">
+						<div class="ctnr-title">CrowdSale</div>
+						<div class="bullet">80% sold, 20% to developers</div>
+						<div class="bullet">Over 50% of funds go to bankroll</div>
+						<div class="bullet">Fully refunded if Soft Cap not met</div>
+						<div class="bullet">Full terms and conditions</div>
+					</div>
+				</div>
+			</div>
+			<div class="links">
+				<span class="label">Resources:</span>
+				<a href="/ico/whitepaper.html">whitepaper</a>
+				<a href="/ico/whitepaper.html#crowdsale">terms</a>
+				<a href="/ico/whitepaper.html#crowdsale">audits</a>
+			</div>
+			<div class="countdown">
+				<div class="summary"></div>
+				<div class="days part">
+					<div class="value">--</div>
+					<div class="label">days</div>
+				</div>
+				<div class="colon">:</div>
+				<div class="hours part">
+					<div class="value">--</div>
+					<div class="label">hours</div>
+				</div>
+				<div class="colon">:</div>
+				<div class="minutes part">
+					<div class="value">--</div>
+					<div class="label">minutes</div>
+				</div>
+				<div class="colon">:</div>
+				<div class="seconds part">
+					<div class="value">--</div>
+					<div class="label">seconds</div>
+				</div>
+			</div>
+			<div class="progress" style="display: none;">
+				<div class="outer">
+					<div class="inner">
+						<div class="amt"></div>
+					</div>
+				</div>
+			</div>
+			<div class="send" style="display: none;">
+				<table width="100%" style="margin-top: 10px;" cellspacing="0" cellpadding="0">
+					<tr>
+						<td align="left" valign="top" width="0%">
+							<div style="white-space: nowrap;">
+								<div class="stat softCap">
+									<div class="value">--</div>
+									<div class="label">Soft Cap</div>
+								</div>
+								<div class="stat hardCap">
+									<div class="value">--</div>
+									<div class="label">Hard Cap</div>
+								</div>
+								<div class="stat raised" style="margin-left: 10px">
+									<div class="value">--</div>
+									<div class="label">Raised</div>
+								</div>
+								<div class="stat bonus">
+									<div class="value">--</div>
+									<div class="label">Current Bonus</div>
+								</div>
+							</div>
+							<div class="requirements">
+								<div class="requirement">
+									<label><input type=checkbox>I've read the <a href="/ico/whitepaper.html" target="_blank">whitepaper</a>, and am making an informed decision.</label>
+								</div>
+								<div class="requirement">
+									<label><input type=checkbox>I've read and understand the <a href="/ico/whitepaper.html#crowdsale" target="_blank">CrowdSale terms and conditions</a>.</label>
+								</div>
+								<div class="requirement">
+									<label><input type=checkbox>I'm following all local rules and regulations with regards to ICOs.</label>
+								</div>
+							</div>
+						</td>
+						<td align="center" valign="top" width="100%">
+							<div class="contribute">
+								<div class="choose">
+									Send <input type="number" class="txtEther" value=1 min=0><span class="amtEther"> Ether</span>
+									to recieve <span class="numTokens">--</span> Tokens
+								</div>
+								<div class="refund" style="display: none;">
+									Since this exceeds the Hard Cap, additional Ether will be refunded.
+								</div>
+								<div class="gasSlider"></div>
+								<div class="btnWrap">
+									<button class="dontTip" title=" ">Send</button>
+								</div>
+								<div class="txStatus"></div>
+							</div>
+							<div class="finalize" style="display: none;">
+								The below button finalizes the ICO. The PennyEther team will do this for you, but just in case, it's available for anybody to do.
+								<br><br>
+								<button>FINALIZE</button>
+								<div class="txStatus"></div>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div></body>
+</html>
