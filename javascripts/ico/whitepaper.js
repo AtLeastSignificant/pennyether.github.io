@@ -458,7 +458,6 @@ Loader.onPageLoad.then(()=>{
 				const stopX = stopOffset.left - $img.width()/2 + $to.width()/2;
 				const stopY = stopOffset.top - $img.height()/2 + $to.height()/2;
 
-
 				const start = +new Date();
 				window.requestAnimationFrame(function step(){
 					const pct = Math.min((+new Date() - start) / duration, 1);

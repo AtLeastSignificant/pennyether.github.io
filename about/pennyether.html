@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="/javascripts/lib/Loader.js"></script>
+		<script>
+			Loader.onPageLoad.then(()=>{
+				const $top = $(".topology");
+				var fundingStart, fundingStop;
+				var fundGameStart, fundGameStop;
+				var game1RevStart, game1RevStop;
+				var game2RevStart, game2RevStop;
+				var revTop, revEnd;
+				var profitsStart, profitsStop;
+				var dividendsStop;
+
+				(function(){
+					const trOffset = $top.find(".treasury").offset();
+					const mcOffset = $top.find(".mc").offset();
+					const gameOffset = $top.find(".games").offset();
+					const game1Offset = $top.find(".game-1").offset();
+					const game2Offset = $top.find(".game-2").offset();
+					const game1lineOffset = $top.find(".game-1-line").offset();
+					const game2lineOffset = $top.find(".game-2-line").offset();
+					const revUpOffset = $top.find(".revenue-up-line").offset();
+					const tokenOffset = $top.find(".token").offset();
+					const holdersOffset = $top.find(".ths").offset();
+
+					fundingStart = {x: trOffset.left + 25, y: trOffset.top + 50};
+					fundingStop = {x: fundingStart.x, y: mcOffset.top + 35};
+					fundGameStart = {x: fundingStop.x, y: fundingStop.y};
+					fundGameStop = {x: gameOffset.left, y: fundGameStart.y};
+					game1RevStart = {x: game1Offset.left + 50, y: game1Offset.top - 7};
+					game1RevStop = {x: game1lineOffset.left + 45, y: game1RevStart.y};
+					game2RevStart = {x: game2Offset.left + 50, y: game2Offset.top - 7};
+					game2RevStop = {x: game2lineOffset.left + 45, y: game2RevStart.y};
+					revTop = {x: game2RevStop.x, y: revUpOffset.top - 20};
+					revEnd = {x: trOffset.left + 300, y: revTop.y};
+					profitsStart = {x: trOffset.left, y: trOffset.top + 75};
+					profitsStop = {x: tokenOffset.left + 110, y: profitsStart.y};
+					dividendsStop = {x: profitsStop.x + 20, y: holdersOffset.top + 35};
+				}());
+
+				function doFunding(){
+					_sendEth(fundingStart, fundingStop, true)
+						.then(() => _sendEth(fundGameStart, fundGameStop, false, true))
+						.then(()=>{
+							setTimeout(doFunding, 7000);			
+						});
+				}
+				setTimeout(doFunding, 7000);
+
+				function doRevenue(){
+					var p;
+					const queueNext = () => setTimeout(doRevenue, Math.random() * 2000);
+					if (Math.random() < .5) {
+						p = _sendEth(game1RevStart, game1RevStop, true)
+							.then(queueNext)
+							.then(() => _sendEth(game1RevStop, revTop));
+					}else{
+						p = _sendEth(game2RevStart, game2RevStop, true)
+							.then(queueNext)
+							.then(() => _sendEth(game2RevStop, revTop));
+					}
+					p.then(() => _sendEth(revTop, revEnd, false, true));
+				}
+				setTimeout(doRevenue, 1000);
+
+				function doProfits(){
+					_sendEth(profitsStart, profitsStop, true)
+						.then(()=>{
+							const promises = [];
+							for (var i = 0; i<15; i++){
+								const signX = Math.random()<.5 ? 1 : -1;
+								const signY = Math.random()<.5 ? 1 : -1;
+								const end = {
+									x: dividendsStop.x + Math.random()*120*signX,
+									y: dividendsStop.y + Math.random()*50*signY
+								};
+								const duration = 700 + Math.random()*1300;
+								promises.push(_sendEth(profitsStop, end, false, true, 20, duration));
+							}
+							return Promise.all(promises);
+						}).then(()=>{
+							setTimeout(doProfits, 4000);
+						});
+				}
+				setTimeout(doProfits, 4000);
+
+				function _sendEth(start, stop, doFadeOn, doFadeOff, size, timeMs) {
+					return new Promise((resolve, reject)=>{
+						const duration = timeMs || 1000;
+						const $img = $("<img>")
+							.attr("src", "/images/ethereum.png")
+							.attr("width", size || 35)
+							.css({
+								opacity: 0,
+								position: "absolute",
+								top: -100,
+								left: -100,
+								background: "rgba(215,255,255,.9)",
+								border: "1px solid #AAA",
+								borderRadius: "40px",
+								boxShadow: "0px 0px 10px 0px rgba(0,0,255,.5)",
+								zIndex: 3
+							})
+							.appendTo(document.body);
+
+						const startX = start.x;
+						const startY = start.y
+						const stopX = stop.x;
+						const stopY = stop.y;
+
+						const startTime = +new Date();
+						window.requestAnimationFrame(function step(){
+							const pct = Math.min((+new Date() - startTime) / duration, 1);
+							const x = startX + pct*(stopX - startX);
+							const y = startY + pct*(stopY - startY);
+							var opacity = 1;
+							if (pct < .5 && doFadeOn) opacity = pct*4;
+							if (pct > .5 && doFadeOff) opacity = (1-pct)*4;
+							$img.css({
+								opacity: opacity,
+								left: Math.round(x),
+								top: Math.round(y)
+							});
+							if (pct < 1) window.requestAnimationFrame(step);
+							else {
+								setTimeout(function(){ $img.remove(); }, 0);
+								resolve();
+							}
+						});
+					});
+				}
+			});
+		</script>
+		<style>
+			.code {
+				padding: 0px 4px;
+				background: #E8E8E8;
+				font-family: courier;
+			}
+			.topology {
+				position: relative;
+				height: 300px;
+				width: 100%;
+				margin: 40px 0px 80px 0px;
+			}
+
+			.topology > div {
+				position: absolute;
+				box-sizing: border-box;
+			}
+			.topology > .box {
+				z-index: 1;
+				border: 1px solid #444;
+				box-shadow: 3px 3px 3px 0px rgba(0,0,0,.2);
+				display: table;
+				border-radius: 4px;
+				background: linear-gradient(to bottom, #EEE 0%, #CCC 100%);
+			}
+			.topology > .line,
+			.revenue-label {
+				color: rgb(0,100,255);
+				font-size: 70%;
+				text-align: center;
+			}
+			.topology > .box > .label {
+				display: table-cell;
+				vertical-align: middle;
+				text-align: center;
+				font-weight: bold;
+				text-shadow: 1px 1px 1px rgba(255,255,255,.5);
+			}
+			.topology a {
+				color: black;
+				text-decoration: none;
+				transition: color .3s;
+			}
+			.topology a:hover {
+				color: blue;
+				text-decoration: underline;
+			}
+
+			.comptroller {
+				top: 0px;
+				left: 0px;
+				height: 50px;
+				width: 33%;
+			}
+			.token {
+				top: 70px;
+				left: 0px;
+				height: 50px;
+				width: 33%;
+			}
+			.topology > .ths {
+				top: 150px;
+				left: 0px;
+				width: 33%;
+				height: 100px;
+				background: linear-gradient(to bottom, #EFE 0%, #CDC 100%);
+			}
+
+			.treasury {
+				top: 0px;
+				left: 45%;
+				width: 45%;
+				height: 120px;
+			}
+			.mc {
+				top: 150px;
+				left: 45%;
+				height: 100px;
+				width: 18%;
+			}
+			.topology > .games {
+				top: 150px;
+				left: 75%;
+				height: 100px;
+				width: 15%;
+				background: #DDD;
+				border: none;
+				border-radius: 3px;
+			}
+			.topology > .games > .title {
+				position: absolute;
+				width: 100%;
+				text-align: center;
+				top: -15px;
+				font-size: 70%;
+				color: gray;
+			}
+			.topology > .games .game {
+				margin: 5px;
+				padding: 5px;
+				font-size: 80%;
+				border-radius: 4px;
+				background: #FAFAFA;
+				border: 1px outset #DDD;
+			}
+			.games .other {
+				opacity: .5;
+			}
+
+			.comptroller-treasury {
+				top: 10px;
+				left: 33%;
+				width: 12%;
+				border-bottom: 1px dotted gray;
+			}
+			.token-treasury {
+				top: 80px;
+				left: 33%;
+				width: 12%;
+				border-bottom: 1px dotted gray;
+			}
+			.mc-treasury {
+				padding-top: 7px;
+				top: 120px;
+				left: 50%;
+				height: 30px;
+				border-left: 1px dotted gray;
+			}
+			.mc-games {
+				top: 190px;
+				left: 63%;
+				width: 12%;
+				border-bottom: 1px dotted gray;
+			}
+			.game-1-line {
+				left: 90%;
+				top: 167px;
+				width: 7%;
+				border-bottom: 1px dotted gray;
+			}
+			.game-2-line {
+				left: 90%;
+				top: 197px;
+				width: 7%;
+				border-bottom: 1px dotted gray;
+			}
+			.game-3-line {
+				left: 90%;
+				top: 230px;
+				width: 7%;
+				border-bottom: 1px dotted gray;
+			}
+			.revenue-up-line {
+				left: 97%;
+				top: 60px;
+				height: 170px;
+				border-left: 1px dotted gray;
+			}
+			.revenue-tr-line {
+				left: 90%;
+				width: 7%;
+				top: 60px;
+				border-bottom: 1px dotted gray;
+			}
+			.revenue-label {
+				left: 90%;
+				top: 45px;
+				padding-left: 5px;
+			}
+			.burning-line {
+				top: 195px;
+				left: 31%;
+				width: 150px;
+				transform-origin: 0px 0px;
+				border-bottom: 1px dotted gray;
+				transform: rotate(-40deg);
+			}
+			.dividends-line {
+				top: 120px;
+				left: 15%;
+				height: 40px;
+				padding-top: 10px;
+				border-left: 1px dotted gray;
+			}
+
+			.dao {
+				top: 280px;
+				height: 30px;
+				left: 0%;
+				width: 90.3%;
+				opacity: .5;
+			}
+			.voting-line {
+				top: 250px;
+				height: 30px;
+				left: 15%;
+				padding-top: 10px;
+				border-left: 1px dotted gray;
+				opacity: .5;
+			}
+			.settings-line {
+				top: 250px;
+				height: 30px;
+				left: 50%;
+				padding-top: 10px;
+				border-left: 1px dotted gray;
+				opacity: .5;
+			}
+			.newgame-line {
+				top: 250px;
+				height: 30px;
+				left: 77%;
+				padding-top: 10px;
+				border-left: 1px dotted gray;
+				opacity: .5;
+			}
+		</style>
+	</head>
+	<body><div id="Content">
+		<div class="main">
+			<div class="section pageTitle">
+				PennyEther
+			</div>
+			<div style="padding: 0px 40px">
+				<p>
+					PennyEther is an experiment. What started as a little Ethereum side-project has grown into a full-time devotion to creating a fair, autonomous, revenue-generating blockchain application. It's our way of pushing the limits of Ethereum, and economics, to see just how feasible the dream of a "pure" DAO is.
+				</p>
+				<p>
+					This article goes over the basics -- a lot more can be found in <a href="/ico/whitepaper.html" target="_blank">our whitepaper</a>.
+				</p>
+
+				<div class="subsection">
+					<div class="head">Our Goals</div>
+					<div class="body">
+						<p>
+							We decided very early on that our focus was technology, and not marketing. Our team members are technically minded, and we're all fatigued by the current ICO and crypto market -- it's endless hype, endless promises, and endless scandal. We want no part in that, though we <i>do</i> want to garner enough interest in our experiement to give it a shot at success.
+						</p>
+						<p>
+							We are much more interested in building and earning revenue from a working product. Partly there's the dream of earning a sizeable passive income, but mostly there's a strong desire to create a fully-fledged blockchain application. We've seen very few projects developed past a prototype or simulated screen-grab, and we want to break new ground.
+						</p>
+						<p>
+							We decided early on to not go public until our product is ready. And here we are.
+						</p>		
+					</div>
+				</div>
+				
+				<div class="subsection">
+					<div class="head">What Penny Ether Is</div>
+					<div class="body">
+						<h3>The Core Structure</h3>
+						<p>
+							PennyEther is a blockchain application that autonomously earns profits by running games on the blockchain. Token Holders own the rights to all profits. Each token is backed by .5 Ether in the Treasury, so Token Holders can burn their tokens at any time to get .5 Ether per token. All revenues generated by PennyEther are sent to the Treasury. If the Treasury has a surplus of Ether, it will immediately distribute profits proportionally to all Token Holders, who can then claim their share of dividends, at any time, forever, and even if they transfer their tokens.
+						</p>
+						<p>
+							The MainController manages and funds all games, and is the only contract the Treasury can send Ether to. For example, a Penny Auction requires Ether to be started - so the MainController will get funding from the Treasury and send it to the new Penny Auction. The Treasury will only fund the MainController a (relatively small) amount per day: <span class="code">dailyFundingLimit</span>. Therefore, the loss of <span class="code">dailyFundingLimit</span> per day is the worst-case scenario for PennyEther.
+						</p>
+						<p>
+							The Treasury protects Token Holders' .5 Ether by having a buffer between the balance required to pay dividends, and the balance required to burn all tokens. This buffer is <span class="code">14 days * dailyFundingLimit</span>. This means that in the worst-case of the Treasury losing <span class="code">dailyFundingLimit</span> per day, Token Holders' .5 Ether will be safe for at least 14 days. Token Holders can monitor the Treasury via the blockchain, or through the <a href="/status/token">Treasury UI</a>.
+						</p>
+						<p>
+							All of the above happens autonomously, and cannot ever be altered by anyone. There is no way to get Ether out of the Treasury other than to burn Tokens, or to fund games (limited by <span class="code">dailyFundingLimit</span>). There are no "emergency" systems in place to prevent dividends from being distributed, or to prevent tokens from being burned, or to remove funds from the Treasury. And you don't have to take our word for it - the source code is public, and we're having it audited.
+						</p>
+						<p>
+							Our whitepaper contains <a href="/ico/whitepaper.html#application-demo" target="_blank">an interactive demo</a> which helps visualize how Ether flows through PennyEther.
+						</p>
+
+						<h3>Operations</h3>
+						<p>
+							Currently, the owners (PennyEther Team) control which games are added and removed, as well as the games' settings. It's in the owners' best interests to have the games be as profitable as possible, since the owners themselves hold a fixed 10% share of the profits, plus 10% of the tokens minted. Our team have deployed two games which are running and profitable; details about those games are further below.
+						</p>
+						<p>
+							In the future, we hope to have the adding and removing of games be autonomously decided by Token Holders. Ideally, Token Holders could vote on if some new deployed game should be included in PennyEther. A successful vote would autonomously upgrade PennyEther to incorporate the new game, and the open-sourced UI would be updated to interface with it. Likewise, Token Holders should be able to collectively act as the admin. They should have the ability to vote on the settings and parameters of games (such as Penny Auction settings).
+						</p>
+						<p>
+							Finally, PennyEther requires certain contract functions to be called periodically to keep it running smoothly. For example, a new Penny Auction may need to be started, or profits from some games may need to be sent to the Treasury. In order to ensure autonomy, these function calls are called Tasks - any user can call them and receive a small reward for doing so. We've made a <a href="/games/tasks" target="_blank">Task UI</a> to ensure these tasks are completed.
+						</p>
+
+						<h3>Apps</h3>
+						<p>
+							One future idea we'd like to explore is becoming a conglomerate.
+						</p>
+						<p>
+							PennyEther can profit from any type of contract, and not just games. Essentially anything that generates revenue and wishes to leverage the PennyEther framework and audience could be part of the PennyEther umbrella, even if developed by 3rd parties. All that is needed is a deployed contract that sends some share of revenues to the Treasury, a UI, and for Token Holders to vote on it.
+						</p>
+						<p>
+							App developers may choose to code their contract however they please - their contract does not necessary have to send 100% of its profits to PennyEther. However, if the develepers are too greedy, or if the proposed contract lacks the assurance that it will be profitable, Token Holders will not vote to include it in PennyEther. Likewise, if the contract fails to deliver profits or runs at a loss, Token Holders may vote to disable it. In either case, the largest loss PennyEther may suffer is limited to <span class="code">dailyFundingLimit</span> per day.
+						</p>
+						<h3>Conclusion</h3>
+						<p>
+							That's basically PennyEther. While it's not yet fully autonomous, the core is in place, as well as two deployed games. We think that's progress. Here's a diagram:
+						</p>
+						<div class="topology">
+							<div class="comptroller box" style="display: table;">
+								<div class="label">
+									<a href="/about/contracts.html#comptroller" target="_blank">CrowdSale</a>
+								</div>
+							</div>
+							<div class="token box">
+								<div class="label">
+									<a href="/about/contracts.html#dividend-token" target="_blank">DividendToken</a>
+								</div>
+							</div>
+							<div class="ths box">
+								<div class="label">Token Holders</div>
+							</div>
+							<!-- <div class="th1 box"></div>
+							<div class="th2 box"></div>
+							<div class="th3 box"></div>
+							<div class="th4 box"></div> -->
+							<div class="treasury box">
+								<div class="label">
+									<a href="/about/contracts.html#treasury" target="_blank">Treasury</a>
+								</div>
+							</div>
+							<div class="mc box">
+								<div class="label">
+									<a href="/about/contracts.html#main-controller" target="_blank">MainController</a>
+								</div>
+							</div>
+							<div class="games box container">
+								<div class="title">Games</div>
+								<div class="game game-1">
+									<a href="/about/contracts.html#penny-auction" target="_blank">Penny Auctions</a>
+								</div>
+								<div class="game game-2">
+									<a href="/about/contracts.html#instadice">InstaDice</a>
+								</div>
+								<div class="game other">Coming soon...</div>
+							</div>
+							<div class="dao box">
+								<div class="label">
+									DAO*
+									<span style="font-size: 50%; color: gray; position: absolute; right: 4px; bottom: 2px;">* not yet implemented</span>
+								</div>
+							</div>
+							<div class="comptroller-treasury line">
+								<span class="tipLeft" title="The CrowdSale provides Treasury with its initial bankroll. All tokens are backed by .5 Ether.">Bankroll ⇨</span>
+							</div>
+							<div class="token-treasury line">
+								<span class="tipRight" title="When Treasury has a surplus of Ether, profits are sent to the DividendToken.">⇦ Profits</span>
+							</div>
+							<div class="mc-treasury line">
+								&nbsp;<span class="tipRight" title="The Treasury can fund MainController a limited amount per day.">⇩ Funding</span>
+								<span style="color: gray; font-style: italic;">[limited per day]</span>
+							</div>
+							<div class="mc-games line">
+								<span class="tipLeft" title="Some games, like Penny Auctions, require Ether to start.">Funding ⇨</span>
+							</div>
+							<div class="game-1-line"></div>
+							<div class="game-2-line"></div>
+							<div class="game-3-line"></div>
+							<div class="revenue-up-line"></div>
+							<div class="revenue-tr-line"></div>
+							<div class="revenue-label">
+								<span class="tipRight" title="Revenue trickles in from games.">⇦ Revenue</div>
+							<div class="burning-line line">
+								<span class="tipRight" title="If PennyEther is failing, Token Holders can burn tokens to receive .5 Ether per token." style="color: red;">⇦ Refund</span>
+							</div>
+							<div class="dividends-line line">
+								<span class="tipRight" title="Any Ether sent to DividendToken is distributed proportionally at the time it is received. Token Holders can claim their dividends at any time, even if they burn or transfer their tokens.">&nbsp;⇩ Dividends</span>
+							</div>
+							<div class="voting-line line">
+								<span class="tipRight" title="Token Holders will be able to vote on new games and PennyEther settings." style="color: green;">&nbsp;⇩ Voting</span>
+							</div>
+							<div class="settings-line line">
+								<span class="tipRight" title="The DAO will be able to change PennyEther settings." style="color: green;">&nbsp;⇧ Settings</span>
+							</div>
+							<div class="newgame-line line">
+								<span class="tipRight" title="The DAO will be able to deploy new games." style="color: green;">&nbsp;⇧ New Games</span>
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+				<div class="subsection">
+					<div class="head">What PennyEther Isn't</div>
+					<div class="body">
+						<p>
+							We much prefer to focus on technology and development than on convincing people that they'll get rich. Even our gaming pages reflect this -- we're not promising riches to our players, but simply a fair and (hopefully) fun way to use their Ether.
+						</p>
+						<p>
+							You may have already noticed our lack-luster landing page, rather plain and technical white-paper, and an overall lack of marketing. We don't have a Chief Marketing Officer, and if we did, we'd frankly be too embarrassed to admit it. We prefer to spend our effort improving our product rather than improving our image, because the whole point of PennyEther is to see just how far we can push towards a pure DAO.
+						</p>
+						<p>
+							If you're in crypto to play the hype game, PennyEther is probably not the coin for you, at least until the day comes where completed products that produce revenue become the new hype. Of course, you're more than welcome to try out our games.
+						</p>
+					</div>
+				</div>
+
+				<div class="subsection">
+					<div class="head">Games</div>
+					<div class="body">
+						<h3>Penny Auctions</h3>
+						<p>
+							A Penny Auction is a type of game where there is a prize, a current winner, and a countdown. When the countdown reaches zero, the current winner receives the prize. To become the current winner, one must send some fixed amount of Ether, typically much less than the prize, to the auction. This will set that user as the current winner and extend the countdown by some time. That user will win unless another person bids before the countdown expires.
+						</p>
+						<p>
+							Classically, there was no way to hold Penny Auctions fairly. The owner of the auction could bid on the auction for free -- when they send the bid fee to the auction, the owner immediately gets their money right back. The owner could guarantee profitability by always bidding after another user. This problem is called "shill bidding" or "bid botting".
+						</p>
+						<p>
+							However, PennyEther solves this problem: The bid fees don't go back to the owner -- they go to the Token Holders, which are distributed. There is no one Token Holder that owns enough tokens to recoupeate their entire bid fee, so there can be no shill bidding. The worst case is that a Token Holder can receive a small discount in bidding, since they will receive some percentage of it back in dividends.
+						</p>
+						<p>
+							Classically, one had to trust the owners of the Penny Auction to actually send the prize. This, too, is solved, because the Penny Auction is a smart contract. The prize will go the winner, and nobody else, and nothing can prevent that from happening short of the Ethereum network going down.
+						</p>
+						<p>
+							<a href="/ico/whitepaper.html#games-penny-auctions">Much more about Penny Auctions can be found in our whitepaper.</a>							
+						</p>
+
+						<h3>InstaDice</h3>
+						<p>
+							InstaDice is like simplified roulette. Users can choose their own odds (or, inversely, payout multiple), and roll a 100 sided die. For example, a user may choose to win on 20 or below, for a payout of roughly 5x.
+						</p>
+						<p>
+							There's nothing innately novel about this game. Blockchain dice games have been around since the 2012. However, our game shows the user their results in one Ethereum block -- around 15-30 seconds -- which is currently the fastest turn around time of any blockchain dice game. We think that's a good differentiator.  
+						</p>
+						<p>
+							Also our UI, though admittedly plain, is arguably the best one out there: we allow the user easily and plainly see thier wager parameters, allow them to choose their own gas price, show the transaction progress, and make all internal details of the roll available to the user.
+						</p>
+						<p>
+							<a href="/ico/whitepaper.html#games-instadice">Much more about InstaDice can be found in our whitepaper.</a>		
+						</p>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div></body>
+</html>

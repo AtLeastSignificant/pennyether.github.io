@@ -68,6 +68,9 @@
 					name: "Our Mission",
 					url: "/about/mission.html"
 				},{
+					name: "Overview",
+					url: "/about/pennyether.html"
+				},{
 					name: "Contracts",
 					url: "/about/contracts.html",
 					linkInBreacrumb: true,
