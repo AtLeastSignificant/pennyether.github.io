@@ -9,7 +9,6 @@
 			/*********************************************/
 			#Title {
 				padding: 20px 0px 20px 0px;
-				background: white;
 				text-align: center;
 			}
 				#Title .sup {
@@ -30,9 +29,13 @@
 				}
 
 			.topCtnr {
-				background: linear-gradient(to bottom, #BBC 0%, #68D 100%);
 				margin: 0px;
 				padding: 15px 0px;
+				background: linear-gradient(to bottom, #BBC 0%, #68D 100%);
+				transition: filter 1s;
+			}
+			.dark .topCtnr {
+				filter: brightness(70%);
 			}
 
 			.featureBox {
@@ -370,7 +373,7 @@
 		}
 		.auction.ended,
 		.auction.initializing {
-			opacity: .75;
+			opacity: .70;
 		}
 
 		.auction tr td {
@@ -591,7 +594,7 @@
 		.sendPrizeTip {
 			font-size: 90%;
 			color: black;
-			width: 380px;
+			width: 390px;
 			border-radius: 3px
 			padding: 10px;
 			text-align: left;

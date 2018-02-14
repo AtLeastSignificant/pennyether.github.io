@@ -8,6 +8,11 @@ body {
 	font-size: 90%;
 	margin: 0px;
 	background: #EEE;
+	transition: background 1s, color 1s;
+}
+
+body.dark {
+	background: #222;
 }
 
 #Content {
@@ -22,6 +27,11 @@ body {
 	/*box-shadow: 20px 0px 0px 20px black;*/
 	margin: 0px auto;
 	background: white;
+	transition: background 1s;
+}
+
+.dark #Content {
+	background: #444949;
 }
 
 /***********************************************/
@@ -34,13 +44,16 @@ body {
 	margin-left: -10px;
 	width: 992px;
 	box-shadow: 0px 3px 4px 0px #888;
+	transition: filter 1s;
+}
+.dark #Nav {
+	filter: brightness(70%);
 }
 
 #Top {
 	display: table;
-	background: #FAFFFA;
-	background: linear-gradient(to bottom, #FAFFFA 0%, #CFC 100%);
 	width: 100%;
+	background: linear-gradient(to bottom, #FAFFFA 0%, #CFC 100%);
 }
 	#Top > .left {
 		display: table-cell;
@@ -69,7 +82,7 @@ body {
 #Top .menuItem {
 	position: relative;
 	display: inline-block;
-	padding: 18.5px 8px;
+	padding: 18px 8px;
 	margin: 0px 5px;
 	cursor: pointer;
 	letter-spacing: .1em;
@@ -126,7 +139,7 @@ body {
 		background: rgba(100,230,100,.8);
 	}
 
-#Breadcrumb {
+#Bottom {
 	position: relative;
 	display: block;
 	z-index: -1;
@@ -134,18 +147,24 @@ body {
 	padding: 5px 0px 5px 20px;
 	background: linear-gradient(to bottom, #FAFAFA 0%, #DDDDDD 100%);
 }
-	#Breadcrumb .item {
+	#Bottom .item {
 		display: inline-block;
 	}
-	#Breadcrumb .item:not(:last-child):after {
+	#Bottom .item:not(:last-child):after {
 		display: inline-block;
 		content: '»';
 		padding-left: 10px;
 		padding-right: 10px;
 	}
-	#Breadcrumb .item:last-child {
+	#Bottom .item:last-child {
 		font-weight: bold;
 		display: inline-block;
+	}
+
+	#Bottom .settings {
+		position: absolute;
+		right: 0px;
+		top: 0px;
 	}
 
 
@@ -168,7 +187,6 @@ body {
 }
 	.section > .head {
 		font-size: 170%;
-		color: black;
 		padding: 10px 10px;
 		font-weight: normal;
 		letter-spacing: .25em;
@@ -191,8 +209,7 @@ body {
 		margin-top: 30px;
 	}
 	.subsection > .body {
-		margin-left: 20px;
-		padding: 10px 10px 10px 0px;
+		padding: 10px 10px 10px 20px;
 	}
 
 	h3 {

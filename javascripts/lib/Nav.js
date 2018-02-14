@@ -11,20 +11,20 @@
 					<div align=right class="middle">
 					</div>
 					<div align=right class="right">
-						<div id="EthStatusGoesHere"></div>
 					</div>
 				</div>
-				<div id="Breadcrumb">
-					<div class="subMenuItem">Page 1</div>
-					<div class="subMenuItem">Page 2</div>
-					<div class="subMenuItem">Page 3</div>
-					<div class="subMenuItem">Page 4</div>
+				<div id="Bottom">
+					<div class="breadcrumb"></div>
+					<div class="settings">Dark</div>
 				</div>
 			</div>
 		`);
 		const _$menu = _$e.find(".middle");
 		const _$status = _$e.find(".right");
-		const _$breadcrumb = _$e.find("#Breadcrumb");
+		const _$breadcrumb = _$e.find(".breadcrumb");
+		const _$settings = _$e.find(".settings").click(()=>{
+			$("body").toggleClass("dark");
+		}).hide();
 
 		const _siteMap = [
 			{

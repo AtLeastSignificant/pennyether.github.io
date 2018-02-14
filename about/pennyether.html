@@ -4,94 +4,13 @@
 		<script src="/javascripts/lib/Loader.js"></script>
 		<script>
 			Loader.onPageLoad.then(()=>{
-				const $top = $(".topology");
-				var fundingStart, fundingStop;
-				var fundGameStart, fundGameStop;
-				var game1RevStart, game1RevStop;
-				var game2RevStart, game2RevStop;
-				var revTop, revEnd;
-				var profitsStart, profitsStop;
-				var dividendsStop;
-
-				(function(){
-					const trOffset = $top.find(".treasury").offset();
-					const mcOffset = $top.find(".mc").offset();
-					const gameOffset = $top.find(".games").offset();
-					const game1Offset = $top.find(".game-1").offset();
-					const game2Offset = $top.find(".game-2").offset();
-					const game1lineOffset = $top.find(".game-1-line").offset();
-					const game2lineOffset = $top.find(".game-2-line").offset();
-					const revUpOffset = $top.find(".revenue-up-line").offset();
-					const tokenOffset = $top.find(".token").offset();
-					const holdersOffset = $top.find(".ths").offset();
-
-					fundingStart = {x: trOffset.left + 25, y: trOffset.top + 50};
-					fundingStop = {x: fundingStart.x, y: mcOffset.top + 35};
-					fundGameStart = {x: fundingStop.x, y: fundingStop.y};
-					fundGameStop = {x: gameOffset.left, y: fundGameStart.y};
-					game1RevStart = {x: game1Offset.left + 50, y: game1Offset.top - 7};
-					game1RevStop = {x: game1lineOffset.left + 45, y: game1RevStart.y};
-					game2RevStart = {x: game2Offset.left + 50, y: game2Offset.top - 7};
-					game2RevStop = {x: game2lineOffset.left + 45, y: game2RevStart.y};
-					revTop = {x: game2RevStop.x, y: revUpOffset.top - 20};
-					revEnd = {x: trOffset.left + 300, y: revTop.y};
-					profitsStart = {x: trOffset.left, y: trOffset.top + 75};
-					profitsStop = {x: tokenOffset.left + 110, y: profitsStart.y};
-					dividendsStop = {x: profitsStop.x + 20, y: holdersOffset.top + 35};
-				}());
-
-				function doFunding(){
-					_sendEth(fundingStart, fundingStop, true)
-						.then(() => _sendEth(fundGameStart, fundGameStop, false, true))
-						.then(()=>{
-							setTimeout(doFunding, 7000);			
-						});
-				}
-				setTimeout(doFunding, 7000);
-
-				function doRevenue(){
-					var p;
-					const queueNext = () => setTimeout(doRevenue, Math.random() * 2000);
-					if (Math.random() < .5) {
-						p = _sendEth(game1RevStart, game1RevStop, true)
-							.then(queueNext)
-							.then(() => _sendEth(game1RevStop, revTop));
-					}else{
-						p = _sendEth(game2RevStart, game2RevStop, true)
-							.then(queueNext)
-							.then(() => _sendEth(game2RevStop, revTop));
-					}
-					p.then(() => _sendEth(revTop, revEnd, false, true));
-				}
-				setTimeout(doRevenue, 1000);
-
-				function doProfits(){
-					_sendEth(profitsStart, profitsStop, true)
-						.then(()=>{
-							const promises = [];
-							for (var i = 0; i<15; i++){
-								const signX = Math.random()<.5 ? 1 : -1;
-								const signY = Math.random()<.5 ? 1 : -1;
-								const end = {
-									x: dividendsStop.x + Math.random()*120*signX,
-									y: dividendsStop.y + Math.random()*50*signY
-								};
-								const duration = 700 + Math.random()*1300;
-								promises.push(_sendEth(profitsStop, end, false, true, 20, duration));
-							}
-							return Promise.all(promises);
-						}).then(()=>{
-							setTimeout(doProfits, 4000);
-						});
-				}
-				setTimeout(doProfits, 4000);
-
+				// animates an Ether icon from start to stop.
 				function _sendEth(start, stop, doFadeOn, doFadeOff, size, timeMs) {
 					return new Promise((resolve, reject)=>{
 						const duration = timeMs || 1000;
 						const $img = $("<img>")
 							.attr("src", "/images/ethereum.png")
-							.attr("width", size || 35)
+							.attr("width", size || 25)
 							.css({
 								opacity: 0,
 								position: "absolute",
@@ -101,7 +20,7 @@
 								border: "1px solid #AAA",
 								borderRadius: "40px",
 								boxShadow: "0px 0px 10px 0px rgba(0,0,255,.5)",
-								zIndex: 3
+								zIndex: 100
 							})
 							.appendTo(document.body);
 
@@ -131,9 +50,739 @@
 						});
 					});
 				}
+
+				// does the Overview animations
+				(function(){
+					const $top = $(".topology");
+					var fundingStart, fundingStop;
+					var fundGameStart, fundGameStop;
+					var game1RevStart, game1RevStop;
+					var game2RevStart, game2RevStop;
+					var revTop, revEnd;
+					var profitsStart, profitsStop;
+					var dividendsStop;
+
+					function updateHeights(){
+						const trOffset = $top.find(".treasury").offset();
+						const mcOffset = $top.find(".mc").offset();
+						const gameOffset = $top.find(".games").offset();
+						const game1Offset = $top.find(".game-1").offset();
+						const game2Offset = $top.find(".game-2").offset();
+						const game1lineOffset = $top.find(".game-1-line").offset();
+						const game2lineOffset = $top.find(".game-2-line").offset();
+						const revUpOffset = $top.find(".revenue-up-line").offset();
+						const tokenOffset = $top.find(".token").offset();
+						const holdersOffset = $top.find(".ths").offset();
+
+						fundingStart = {x: trOffset.left + 30, y: trOffset.top + 60};
+						fundingStop = {x: fundingStart.x, y: mcOffset.top + 41};
+						fundGameStart = {x: fundingStop.x, y: fundingStop.y};
+						fundGameStop = {x: gameOffset.left, y: fundGameStart.y};
+						game1RevStart = {x: game1Offset.left + 65, y: game1Offset.top - 2};
+						game1RevStop = {x: revUpOffset.left - 14, y: game1RevStart.y};
+						game2RevStart = {x: game1RevStart.x, y: game2Offset.top - 2};
+						game2RevStop = {x: game1RevStop.x, y: game2RevStart.y};
+						revTop = {x: game2RevStop.x, y: revUpOffset.top - 13};
+						revEnd = {x: trOffset.left + 300, y: revTop.y};
+						profitsStart = {x: trOffset.left, y: trOffset.top + 80};
+						profitsStop = {x: tokenOffset.left + 110, y: profitsStart.y};
+						dividendsStop = {x: profitsStop.x + 20, y: holdersOffset.top + 35};
+					};
+					updateHeights();
+					setInterval(updateHeights, 1000);
+
+					function doFunding(){
+						_sendEth(fundingStart, fundingStop, true)
+							.then(() => _sendEth(fundGameStart, fundGameStop, false, true))
+							.then(()=>{
+								setTimeout(doFunding, 7000);			
+							});
+					}
+					setTimeout(doFunding, 7000);
+
+					function doRevenue(){
+						var p;
+						const queueNext = () => setTimeout(doRevenue, Math.random() * 2000);
+						if (Math.random() < .5) {
+							p = _sendEth(game1RevStart, game1RevStop, true)
+								.then(queueNext)
+								.then(() => _sendEth(game1RevStop, revTop));
+						}else{
+							p = _sendEth(game2RevStart, game2RevStop, true)
+								.then(queueNext)
+								.then(() => _sendEth(game2RevStop, revTop));
+						}
+						p.then(() => _sendEth(revTop, revEnd, false, true));
+					}
+					setTimeout(doRevenue, 1000);
+
+					function doProfits(){
+						_sendEth(profitsStart, profitsStop, true)
+							.then(()=>{
+								const promises = [];
+								for (var i = 0; i<15; i++){
+									const signX = Math.random()<.5 ? 1 : -1;
+									const signY = Math.random()<.5 ? 1 : -1;
+									const end = {
+										x: dividendsStop.x + Math.random()*120*signX,
+										y: dividendsStop.y + Math.random()*50*signY
+									};
+									const duration = 700 + Math.random()*1300;
+									promises.push(_sendEth(profitsStop, end, false, true, 20, duration));
+								}
+								return Promise.all(promises);
+							}).then(()=>{
+								setTimeout(doProfits, 4000);
+							});
+					}
+					setTimeout(doProfits, 4000);
+				}());
+				
+				// does the Treasury animations
+				(function(){
+					function FinanceBar(){
+						const _$e = $(`
+							<div id="FinanceBar">
+								<div class="bar" style="position: relative;">
+									<div class="balanceBar" style="height: 100%; position: absolute;"></div>
+									
+									<div class="bankrollMarker" style="height: 100%; position: absolute;"></div>
+									<div class="divThreshMarker" style="height: 100%; position: absolute;"></div>
+									<div class="balanceMarker" style="height: 100%; position: absolute;"></div>
+
+									<div class="balanceTxt" style="position: absolute; top: -20px;"></div>
+									<div class="bankrollTxt" style="position: absolute; bottom: -20px;"></div>
+									<div class="divThreshTxt" style="position: absolute; bottom: -35px;"></div>
+								</div>
+							</div>
+						`);
+						const _$balanceBar = _$e.find(".balanceBar");
+						const _$balanceMarker = _$e.find(".balanceMarker");
+						const _$bankrollMarker = _$e.find(".bankrollMarker");
+						const _$divThreshMarker = _$e.find(".divThreshMarker");
+
+						const _$balanceTxt = _$e.find(".balanceTxt")
+							.attr("title", "The amount of ETH Treasury is holding.")
+							.addClass("tipRight");
+						const _$bankrollTxt = _$e.find(".bankrollTxt")
+							.attr("title", "The amount of ETH token holders have staked. If balance is above this, all token holder's ETH is safe.")
+							.addClass("tipRight");
+						const _$divThreshTxt = _$e.find(".divThreshTxt")
+							.attr("title", "Any balance above this amount can be distributed as dividends.")
+							.addClass("tipRight");
+
+						tippy(_$balanceTxt[0], {placement: "top"});
+						tippy([_$bankrollTxt[0], _$divThreshTxt[0]], {placement: "bottom"});
+
+						this.$e = _$e;
+						this.setValues = function(balance, bankroll, divThreshold){
+							// calculate max number, add 10%
+							const max = new BigNumber(800e18);
+							const width = _$e.find(".bar").width();
+							function toPct(val) {
+								return val.div(max).mul(width).round().toNumber();
+							}
+							const balancePct = toPct(balance);
+							const bankrollPct = toPct(bankroll);
+							const threshPct = toPct(divThreshold);
+
+							// make the bankground change
+							(function(){
+								const bankrollColor = `rgba(0,200,0,.8)`;
+								const threshColor = `rgba(0,240,0,.8)`;
+								const profitColor = `rgba(0,255,0,1)`;
+								const bands = [];
+								bands.push(`${bankrollColor} 0%`);
+								bands.push(`${bankrollColor} ${bankrollPct}px`);
+								bands.push(`${threshColor} ${bankrollPct+3}px`);
+								bands.push(`${threshColor} ${threshPct}px`);
+								bands.push(`${profitColor} ${threshPct+3}px`);
+								const gradient = `linear-gradient(to right, ${bands.join(", ")})`;
+								_$balanceBar.css("background", gradient);
+							}());
+
+							_$balanceMarker.width(`${balancePct}px`);
+							_$bankrollMarker.width(`${bankrollPct}px`);
+							_$divThreshMarker.width(`${threshPct}px`);
+							_$balanceTxt.css("left", `${balancePct}px`)
+								.text("↓ Balance: " + ethUtil.toEthStr(balance,0));
+							_$bankrollTxt.css("left", `${bankrollPct}px`)
+								.text("↑ Bankroll: " + ethUtil.toEthStr(bankroll,0));
+							_$divThreshTxt.css("left", `${threshPct}px`)
+								.text("↑ Dividend Threshold: " + ethUtil.toEthStr(divThreshold,0));
+
+							_$balanceBar.width(balancePct);
+						}
+					}
+					const $sim = $("#tr-sim");
+					const bar = new FinanceBar();
+					bar.$e.appendTo($sim.find(".bar-placeholder"));
+					const $txtBalance = bar.$e.find(".balanceTxt");
+					const $txtBankroll = bar.$e.find(".bankrollTxt");
+					const $txtDivThresh = bar.$e.find(".divThreshTxt");
+					const $dfl = $sim.find(".treasury .dailyFundingLimit");
+					const $dflLabel = $dfl.find(".label");
+					const $dflValue = $dfl.find(".value");
+					const $investors = $sim.find(".investors").addClass("show");
+					const $crowdsale = $sim.find(".crowdsale").addClass("show");
+					const $token = $sim.find(".token").addClass("show");
+					const $pa1 = $sim.find(".pennyauction1");
+					const $pa2 = $sim.find(".pennyauction2");
+					const $instadice = $sim.find(".instadice");
+					const $extra = $sim.find(".extra");
+
+					const $status = $("#tr-sim .status");
+					const $statusTxt = $("#tr-sim .status .left");
+					const $statusBtn = $("#tr-sim .status button").click(nextStep);
+
+					function updateBar(){
+						bar.setValues(balance, bankroll, divThreshold);
+					}
+
+					var step, bankroll, balance, divThreshold;
+					function reset() {
+						step = 0;
+						bankroll = new BigNumber(0);
+						balance = new BigNumber(0);
+						divThreshold = new BigNumber(0);
+						$pa1.removeClass("show");
+						$pa2.removeClass("show");
+						$instadice.removeClass("show");
+						$extra.css({opacity: 0});
+						$txtDivThresh.hide();
+						$dfl.hide();
+						nextStep();
+					}
+					function nextStep(){
+						const next = steps[step];
+						if (!next) reset();
+						steps[step]();
+						step++;
+					}
+					function wait(timeMs){
+						$statusBtn.attr("disabled", "disabled").css("opacity", .2);
+						return new Promise((res,rej)=>{
+							setTimeout(()=>{
+								$statusBtn.removeAttr("disabled", "disabled").css("opacity","");
+								res();
+							}, timeMs);
+						});
+					}
+					const steps = [
+						function step0a() {
+							updateBar();
+							$statusBtn.text("Continue");
+							$statusTxt.empty()
+								.append(`Prior to the CrowdSale, the Treasury will have zero bankroll.<br>
+										It will be funded by the owners.`);
+						},
+						function step0b() {
+							$statusBtn.text("Start CrowdSale");
+							$statusTxt.empty()
+								.append(`The CrowdSale will send .5 Ether per Token to the Treasury.<br>
+										 These funds will be used as <span class="code">bankroll</span>.<br>
+										 In this example, the CrowdSale mints 1,000 tokens.`);
+						},
+						function step1(){
+							const invOffset = $investors.offset();
+							const csOffset = $crowdsale.offset();
+							const invPt = {x: invOffset.left + 40, y: invOffset.top};
+							const invHeight = $investors.height();
+							const csPt = {x: csOffset.left + 40, y: invPt.y};
+							const trPt = {x: csPt.x, y: csPt.y - 100};
+							// send 10 eth icons from investors to crowdsale.
+							for (var i=0; i<20; i++) {
+								const start = {x: invPt.x, y: invPt.y + Math.random()*invHeight};
+								const stop = {x: csPt.x, y: start.y};
+								const timeMs = 500 + Math.random()*1000;
+								setTimeout(()=>{
+									_sendEth(start, stop, true, true, 10, timeMs);	
+								}, Math.random()*1500);
+							}
+							wait(3000).then(()=>{
+								_sendEth(csPt, trPt, true, true);
+								return wait(1000);
+							}).then(()=>{
+								bankroll = bankroll.plus(500e18);
+								balance = balance.plus(500e18);
+								divThreshold = divThreshold.plus(500e18);
+								updateBar();
+								return wait(2500);
+							}).then(()=>{
+								$statusBtn.text("Continue");
+								$statusTxt.empty()
+									.append(`The <span class="code">bankroll</span> is now 500 Ether.<br>
+											As long as the Treasury balance is above this value,<br>
+											all tokens can be burned for refund of .5 Ether each.`);
+								$txtBankroll.addClass("on");
+							});
+						},
+						function step2(){
+							$txtBankroll.removeClass("on");
+							wait(1000).then(()=>{
+								$dfl.show();
+								setTimeout(()=>$dflLabel.addClass("on"), 100);
+								$statusBtn.text("Set dailyFundingLimit");
+								$statusTxt.empty()
+									.append(`The Treasury has a variable called <span class="code">dailyFundingLimit</span>.<br>
+										This is the amount of Ether that the Treasury can spend each day.<br>
+										This ensures nobody can steal from the Treasury.<br>
+										<b>Let's set this value to 5 Ether.</b>
+									`);
+							})
+						},
+						function step3(){
+							$dflLabel.removeClass("on");
+							$dflValue.addClass("on").text("5 Ether");
+							wait(1000).then(()=>{
+								$txtDivThresh.show().addClass("on");
+								divThreshold = divThreshold.plus(60e18);
+								updateBar();
+								return wait(2000);
+							}).then(()=>{
+								$statusBtn.text("Finish CrowdSale");
+								$statusTxt.empty()
+									.append(`Notice the Dividend Threshold marker.<br>`)
+									.append(`Its value is hardcoded to <span class="code">bankroll + 14 * dailyFundingLimit</span>.<br>`)
+									.append(`Any balance above this is considered profit, and will be sent to DividendToken.<br>`)
+									.append(`<b>The CrowdSale will send Ether to meet this amount.</b>`);
+							});
+						},
+						function step4(){
+							const csOffset = $crowdsale.offset();
+							const csPt = {x: csOffset.left + 40, y: csOffset.top + 10};
+							const trPt = {x: csPt.x, y: csPt.y - 100};
+							_sendEth(csPt, trPt, true, true);
+							wait(1000).then(()=>{
+								balance = balance.plus(60e18);
+								updateBar();
+								return wait(2000);
+							}).then(()=>{
+								$txtDivThresh.removeClass("on");
+								$txtBalance.addClass("on");
+								$txtBankroll.addClass("on");
+								$statusBtn.text("Continue");
+								$statusTxt.empty()
+									.append(`Since the most Treasury can lose per day is <span class="code">dailyFundingLimit</span>,<br>
+										Tokens are fully collateralized for at least 14 days.`);
+							});
+						},
+						function step5(){
+							$txtBalance.removeClass("on");
+							$txtBankroll.removeClass("on");
+							$dflValue.removeClass("on");
+							wait(1000).then(()=>{
+								$statusBtn.text("Start a Penny Auction");
+								$statusTxt.empty()
+									.append(`The CrowdSale is complete!<br>
+											Now let's see what happens when the Treasury funds a game.<br>
+											<b>Let's start a Penny Auction with a 5 Ether prize.</b>`);
+							});
+						},
+						function step6(){
+							$txtBalance.addClass("on");
+							balance = balance.minus(5e18);
+							updateBar();
+							wait(2000).then(()=>{
+								$txtBalance.removeClass("on");
+								const paOffset = $pa1.offset();
+								const start = {x: paOffset.left+20, y: paOffset.top-100};
+								const stop = {x: start.x, y: paOffset.top+20};
+								$pa1.addClass("show");
+								_sendEth(start, stop, true, true);
+								return wait(1000);
+							}).then(()=>{
+								$statusBtn.text("Collect Revenue");
+								$statusTxt.empty()
+									.append(`Treasury balance has decreased by 5 Ether.<br>
+											The Penny Auction will periodically send its revenue to Treasury.<br>
+											Ideally, it produces more than 5 Ether in revenue.`);
+							});
+						},
+						function step7(){
+							const paOffset = $pa1.offset();
+							const paPt = {x: paOffset.left, y: paOffset.top+30};
+							const paWidth = $pa1.width();
+							for (var i=0; i<9; i++) {
+								const start = {x: paOffset.left + Math.random()*paWidth, y: paPt.y};
+								const stop = {x: start.x, y: start.y-100};
+								setTimeout(()=>{
+									_sendEth(start, stop, true, true, 10);	
+								}, i*200);
+							}
+							wait(2000).then(()=>{
+								$txtBalance.addClass("on");
+								balance = balance.plus(10e18);
+								updateBar();
+								return wait(2000);
+							}).then(()=>{
+								$statusBtn.text("Distribute Profits");
+								$statusTxt.empty()
+									.append(`<b>The Treasury now has a profit!</b><br>
+											Profits will get distributed to the DividendToken.<br>
+											There is no "distribution period" - dividends can happen at any time.<br>
+											Investors will be able to collect their share, at any time, forever.<br>
+											`);
+							});
+						},
+						function step8(){
+							const invOffset = $investors.offset();
+							const tokenOffset = $token.offset();
+							const tokenPt = {x: tokenOffset.left + 20, y: tokenOffset.top}
+							const tokenHeight = $token.height();
+							const invPt = {x: invOffset.left + 20, y: tokenPt.y};
+							const trPt = {x: tokenPt.x, y: tokenPt.y - 100};
+							balance = balance.minus(5e18);
+							updateBar();
+							wait(2000).then(()=>{
+								_sendEth(trPt, tokenPt, true, true);
+								return wait(1000);
+							}).then(()=>{
+								for (var i=0; i<20; i++){
+									const start = {x: tokenPt.x, y: tokenOffset.top + Math.random()*tokenHeight};
+									const stop = {x: invPt.x, y: start.y};
+									setTimeout(()=>{
+										_sendEth(start, stop, true, true, 10);
+									}, Math.random()*2000)
+								}
+								return wait(3000);
+							}).then(()=>{
+								$statusBtn.text("Continue");
+								$statusTxt.empty()
+									.append(`The Treasury has distributed profits.<br>
+										All tokens are still burnable for at least 14 days.`);
+							});
+						},
+						function step9(){
+							$txtBalance.removeClass("on");
+							$statusBtn.text("Start another auction");
+							$statusTxt.empty()
+								.append(`More than one Penny Auction can be started at once.<br>
+										For now, the admin sets how many auctions can run at once.<br>
+										In the future, a DAO will decide.<br>
+										<b>Let's start another Penny Auction</b>`);
+						},
+						function step10(){
+							$txtBalance.addClass("on");
+							balance = balance.minus(5e18);
+							updateBar();
+							wait(2000).then(()=>{
+								$txtBalance.removeClass("on");
+								const paOffset = $pa2.offset();
+								const start = {x: paOffset.left+20, y: paOffset.top-100};
+								const stop = {x: start.x, y: paOffset.top+20};
+								$pa2.addClass("show");
+								_sendEth(start, stop, true, true);
+								return wait(1000);
+							}).then(()=>{
+								$statusBtn.text("Add another Game Type");
+								$statusTxt.empty()
+									.append(`PennyEther was designed with scalability in mind.<br>
+										New game types can be easily added.<br>
+										<b>Let's add another Game Type</b>`);
+							});
+						},
+						function step11(){
+							$instadice.addClass("show");
+							wait(1000).then(()=>{
+								$statusBtn.text("Fund InstaDice");
+								$statusTxt.empty()
+									.append(`Now that we have a new game, let's fund it.`);
+							});
+						},
+						function step12(){
+							$txtBalance.addClass("on");
+							balance = balance.minus(5e18);
+							updateBar();
+							wait(2000).then(()=>{
+								$txtBalance.removeClass("on");
+								const idOffset = $instadice.offset();
+								const start = {x: idOffset.left+20, y: idOffset.top-100};
+								const stop = {x: start.x, y: idOffset.top+20};
+								_sendEth(start, stop, true, true);
+								return wait(1000);
+							}).then(()=>{
+								$statusBtn.text("Collect Profits");
+								$statusTxt.empty()
+									.append(`We now have many sources of revenue.<br>
+										Revenue is collected periodically, either automatically, <br>
+										or by incentivizing users to run Tasks that will collect it.<br>`);
+							});
+						},
+						function step13(){
+							const pa1Offset = $pa1.offset();
+							const pa1Pt = {x: pa1Offset.left, y: pa1Offset.top+30};
+							const pa1Width = $pa1.width();
+							for (var i=0; i<9; i++) {
+								const start = {x: pa1Offset.left + Math.random()*pa1Width, y: pa1Pt.y};
+								const stop = {x: start.x, y: start.y-100};
+								setTimeout(()=>{
+									_sendEth(start, stop, true, true, 10);	
+								}, i*200);
+							}
+
+							const pa2Offset = $pa2.offset();
+							const pa2Pt = {x: pa2Offset.left, y: pa2Offset.top+30};
+							const pa2Width = $pa2.width();
+							for (var i=0; i<9; i++) {
+								const start = {x: pa2Offset.left + Math.random()*pa2Width, y: pa2Pt.y};
+								const stop = {x: start.x, y: start.y-100};
+								setTimeout(()=>{
+									_sendEth(start, stop, true, true, 10);	
+								}, i*200);
+							}
+
+							const idOffset = $instadice.offset();
+							const idPt = {x: idOffset.left, y: idOffset.top+20};
+							const idWidth = $instadice.width();
+							for (var i=0; i<9; i++) {
+								const start = {x: idPt.x + Math.random()*idWidth, y: idPt.y};
+								const stop = {x: start.x, y: start.y-100};
+								setTimeout(()=>{
+									_sendEth(start, stop, true, true, 10);	
+								}, i*200);
+							}
+
+							wait(2000).then(()=>{
+								$txtBalance.addClass("on");
+								balance = balance.plus(20e18);
+								updateBar();
+								return wait(2000);
+							}).then(()=>{
+								$statusTxt.empty()
+									.append(`Let's distribute those profits...`);
+								return wait(1000)
+							}).then(()=>{
+								const invOffset = $investors.offset();
+								const tokenOffset = $token.offset();
+								const tokenPt = {x: tokenOffset.left + 20, y: tokenOffset.top + 10}
+								const invPt = {x: invOffset.left + 20, y: tokenPt.y};
+								const trPt = {x: tokenPt.x, y: tokenPt.y - 100};
+								balance = balance.minus(10e18);
+								updateBar();
+								wait(2000).then(()=>{
+									_sendEth(trPt, tokenPt);
+									return wait(1000);
+								}).then(()=>{
+									$txtBalance.removeClass("on");
+									for (var i=0; i<20; i++){
+										const start = {x: tokenPt.x, y: tokenOffset.top + Math.random()*40};
+										const stop = {x: invPt.x, y: start.y};
+										setTimeout(()=>{
+											_sendEth(start, stop, true, true, 10);
+										}, Math.random()*2000)
+									}
+									return wait(2000);
+								}).then(()=>{
+									$statusBtn.text("Continue")
+									$statusTxt.empty()
+										.append(`Profits have been distributed.`);
+								})
+							});
+						},
+						function step14(){
+							$extra.css({opacity: ".4"});
+							$statusBtn.text("Continue");
+							$statusTxt.empty()
+								.append(`Adding new game types is easy.<br>
+									3rd Party Developers can submit games to the PennyEther platform.<br>
+									As long as their game sends some of its revenue to Treasury,<br>
+									and meets quality standards, the owners will include the game into the UI.`)
+						},
+						function step14b(){
+							$statusBtn.text("Continue");
+							$statusTxt.empty()
+								.append(`Ideally, a DAO will vote on including new games.<br>
+										For now, the owners will code games, and will determine<br>
+										which 3rd party games can be included.`);
+						},
+						function step15(){
+							$statusBtn.text("Burn 100 Tokens");
+							$statusTxt.empty()
+								.append(`Token Holders can burn their tokens at any time.<br>
+									They will get a refund of .5 Ether per token, taken from the bankroll.<br>
+									<b>Let's see what happens when someone burns 100 Tokens<b>`);
+						},
+						function step16(){
+							$txtBankroll.addClass("on")
+							balance = balance.minus(50e18);
+							bankroll = bankroll.minus(50e18);
+							divThreshold = divThreshold.minus(50e18);
+							updateBar();
+							wait(2000).then(()=>{
+								const invOffset = $investors.offset();
+								const invPt = {x: invOffset.left + 20, y: invOffset.top + 20};
+								const trPt = {x: invPt.x, y: invPt.y - 100};
+								_sendEth(trPt, invPt, true, true);
+								return wait(1000);
+							}).then(()=>{
+								$statusBtn.text("Continue");
+								$statusTxt.empty()
+									.append(`The bankroll has been reduced by 50 Ether and the Investor has gotten back 50 Ether.<br>
+										Since the supply of tokens has decreased, remaining Token Holders<br>
+										will receive a higher percentage of each dividend.`);
+							});
+						},
+						function step17(){
+							$statusBtn.text("Continue");
+							$statusTxt.empty()
+								.append(`Since the bankroll has been reduced, so too has the Dividend Threshold.<br>
+									The Treasury is still in good health, regardless of having less bankroll.`);
+						},
+						function step18(){
+							$txtBankroll.removeClass("on");
+							$statusBtn.text("Reset");
+							$statusTxt.empty()
+								.append(`That's all.<br>
+										For more information, see <a href="/ico/whitepaper.html">the whitepaper</a>.`);
+						}
+					];
+
+					reset();
+				}());
 			});
 		</script>
 		<style>
+			#tr-sim {
+				margin-top: 20px;
+				margin-bottom: 30px;
+			}
+			#tr-sim .treasury {
+				box-sizing: border-box;
+				width: 850px;
+				padding: 10px;
+				margin: 0px auto 0px auto;
+
+				border: 1px solid #444;
+				box-shadow: 3px 3px 3px 0px rgba(0,0,0,.2);
+				border-radius: 4px;
+				background: linear-gradient(to bottom, #EEE 0%, #CCC 100%);
+			}
+				#tr-sim .treasury .title {
+					text-align: center;
+					font-weight: bold;
+				}
+				#tr-sim .treasury .dailyFundingLimit {
+					text-align: center;
+					display: none;
+					font-size: 90%;
+					text-shadow: 1px 1px 1px rgba(255,255,255,.4);
+				}
+				#tr-sim .treasury .dailyFundingLimit span {
+					padding: 0px 3px;
+					transition: color 1s, background 1s;
+				}
+			#tr-sim .bar-placeholder {
+				height: 60px;
+				padding-top: 30px;
+			}
+			#tr-sim .contracts {
+				width: 850px;
+				margin: 0px auto;
+				margin-top: 20px;
+				text-align: left;
+			}
+			#tr-sim .contract {
+				border: 1px solid #444;
+				box-shadow: 3px 3px 3px 0px rgba(0,0,0,.2);
+				display: inline-block;
+				border-radius: 4px;
+				background: linear-gradient(to bottom, #EEE 0%, #CCC 100%);
+				margin-right: 10px;
+				padding: 5px 10px;
+				font-size: 80%;
+				font-weight: bold;
+				opacity: 0;
+				transition: opacity 1s;
+			}
+			#tr-sim .contract.show {
+				opacity: 1;
+			}
+			#tr-sim .contract > div {
+				display: table;
+				height: 30px;
+			}
+			#tr-sim .contract > div > div {
+				display: table-cell;
+				vertical-align: middle;
+				text-align: center;
+			}
+
+			#tr-sim .status {
+				display: table;
+				border-radius: 5px;
+				background: rgba(0,0,255,.1);
+				border: 1px solid rgba(0,0,255, .3);
+				box-shadow: 3px 3px 3px 0px rgba(0,0,0,.05);
+				text-shadow: 1px 1px 1px rgba(255,255,255,.4);
+				margin-top: 20px;
+				transition: opacity 2s;
+				max-width: 800px;
+			}
+			#tr-sim .status .code {
+				background: rgba(0,0,255,.8);
+				color: white;
+			}
+			#tr-sim .status .left {
+				display: table-cell;
+				vertical-align: middle;
+				font-size: 90%;
+				padding: 10px;
+			}
+			#tr-sim .status .right {
+				display: table-cell;
+				vertical-align: middle;
+				padding: 2px 10px;
+				width: 0px;
+				border-left: 1px dotted gray;
+			}
+			#tr-sim .status button {
+				font-size: 120%;
+				color: blue;
+				cursor: pointer;
+			}
+			#tr-sim .on {
+				background: blue;
+				color: white;
+			}
+
+			#FinanceBar {
+				margin: 0px auto;
+				width: 80%;
+			}
+			#FinanceBar .bar {
+				border: 1px solid black;
+				background: #FAFAFA;
+				height: 20px;
+			}
+			#FinanceBar .balanceBar {
+				width: 0%;
+				transition: width 2s;
+			}
+
+			#FinanceBar .balanceMarker,
+			#FinanceBar .bankrollMarker,
+			#FinanceBar .divThreshMarker {
+				width: 0%;
+				border-right: 2px dotted gray;
+				transition: width 2s;
+			}
+			#FinanceBar .balanceMarker {
+				border-right: 2px solid black;
+			}
+
+			#FinanceBar .balanceTxt,
+			#FinanceBar .bankrollTxt,
+			#FinanceBar .divThreshTxt {
+				font-size: 75%;
+				font-weight: bold;
+				white-space: nowrap;
+				margin-left: -3px;
+				left: 0px;
+				transition: left 2s, color 1s, background 1s;
+			}
+
+
 			.code {
 				padding: 0px 4px;
 				background: #E8E8E8;
@@ -159,7 +808,7 @@
 				background: linear-gradient(to bottom, #EEE 0%, #CCC 100%);
 			}
 			.topology > .line,
-			.revenue-label {
+			.topology .revenue-label {
 				color: rgb(0,100,255);
 				font-size: 70%;
 				text-align: center;
@@ -181,13 +830,13 @@
 				text-decoration: underline;
 			}
 
-			.comptroller {
+			.topology .comptroller {
 				top: 0px;
 				left: 0px;
 				height: 50px;
 				width: 33%;
 			}
-			.token {
+			.topology .token {
 				top: 70px;
 				left: 0px;
 				height: 50px;
@@ -201,13 +850,13 @@
 				background: linear-gradient(to bottom, #EFE 0%, #CDC 100%);
 			}
 
-			.treasury {
+			.topology .treasury {
 				top: 0px;
 				left: 45%;
 				width: 45%;
 				height: 120px;
 			}
-			.mc {
+			.topology .mc {
 				top: 150px;
 				left: 45%;
 				height: 100px;
@@ -238,71 +887,71 @@
 				background: #FAFAFA;
 				border: 1px outset #DDD;
 			}
-			.games .other {
+			.topology .games .other {
 				opacity: .5;
 			}
 
-			.comptroller-treasury {
+			.topology .comptroller-treasury {
 				top: 10px;
 				left: 33%;
 				width: 12%;
 				border-bottom: 1px dotted gray;
 			}
-			.token-treasury {
+			.topology .token-treasury {
 				top: 80px;
 				left: 33%;
 				width: 12%;
 				border-bottom: 1px dotted gray;
 			}
-			.mc-treasury {
+			.topology .mc-treasury {
 				padding-top: 7px;
 				top: 120px;
 				left: 50%;
 				height: 30px;
 				border-left: 1px dotted gray;
 			}
-			.mc-games {
+			.topology .mc-games {
 				top: 190px;
 				left: 63%;
 				width: 12%;
 				border-bottom: 1px dotted gray;
 			}
-			.game-1-line {
+			.topology .game-1-line {
 				left: 90%;
 				top: 167px;
 				width: 7%;
 				border-bottom: 1px dotted gray;
 			}
-			.game-2-line {
+			.topology .game-2-line {
 				left: 90%;
 				top: 197px;
 				width: 7%;
 				border-bottom: 1px dotted gray;
 			}
-			.game-3-line {
+			.topology .game-3-line {
 				left: 90%;
 				top: 230px;
 				width: 7%;
 				border-bottom: 1px dotted gray;
 			}
-			.revenue-up-line {
+			.topology .revenue-up-line {
 				left: 97%;
 				top: 60px;
 				height: 170px;
 				border-left: 1px dotted gray;
 			}
-			.revenue-tr-line {
+			.topology .revenue-tr-line {
 				left: 90%;
 				width: 7%;
 				top: 60px;
 				border-bottom: 1px dotted gray;
 			}
-			.revenue-label {
+			.topology .revenue-label {
 				left: 90%;
 				top: 45px;
 				padding-left: 5px;
 			}
-			.burning-line {
+			.topology .burning-line {
 				top: 195px;
 				left: 31%;
 				width: 150px;
@@ -310,7 +959,7 @@
 				border-bottom: 1px dotted gray;
 				transform: rotate(-40deg);
 			}
-			.dividends-line {
+			.topology .dividends-line {
 				top: 120px;
 				left: 15%;
 				height: 40px;
@@ -382,9 +1031,70 @@
 				<div class="subsection">
 					<div class="head">What Penny Ether Is</div>
 					<div class="body">
+						<h3>High-Level Demo</h3>
+						<div id="tr-sim">
+							<div class="treasury">
+								<div class="title">Treasury</div>
+								<div class="bar-placeholder"></div>
+								<div class="dailyFundingLimit">
+									<span class="label">dailyFundingLimit:</span>
+									<span class="value">0 Ether</span>
+								</div>
+							</div>
+							<div class="contracts">
+								<div class="contract crowdsale">
+									<div>
+										<div>CrowdSale</div>
+									</div>
+								</div>
+								<div class="contract investors">
+									<div>
+										<div>Investors</div>
+									</div>
+								</div>
+								<div class="contract token">
+									<div>
+										<div>DividendToken</div>
+									</div>
+								</div>
+								<div class="contract pennyauction1">
+									<div>
+										<div>Penny Auction #1</div>
+									</div>
+								</div>
+								<div class="contract pennyauction2">
+									<div>
+										<div>Penny Auction #2</div>
+									</div>
+								</div>
+								<div class="contract instadice">
+									<div>
+										<div>InstaDice</div>
+									</div>
+								</div>
+								<div class="contract extra">
+									<div>
+										<div>3rd Party<br>Games</div>
+									</div>
+								</div>
+							</div>
+							<div style="text-align: center;">
+								<div style="display: inline-block;">
+									<div class="status">
+										<div class="left">
+											Test status goes here
+										</div>
+										<div class="right">
+											<button>Do Stuff</button>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+
 						<h3>The Core Structure</h3>
 						<p>
-							PennyEther is a blockchain application that autonomously earns profits by running games on the blockchain. Token Holders own the rights to all profits. Each token is backed by .5 Ether in the Treasury, so Token Holders can burn their tokens at any time to get .5 Ether per token. All revenues generated by PennyEther are sent to the Treasury. If the Treasury has a surplus of Ether, it will immediately distribute profits proportionally to all Token Holders, who can then claim their share of dividends, at any time, forever, and even if they transfer their tokens.
+							PennyEther is a blockchain application that autonomously earns revenue by running games on the blockchain. Token Holders own the rights to all profits. Each token is backed by .5 Ether in the Treasury bankroll, so Token Holders can burn their tokens at any time to get .5 Ether per Token. All revenues generated by PennyEther are sent to the Treasury. If the Treasury has a profit, it will immediately distribute it proportionally to all Token Holders, who can then claim their share of dividends, at any time, forever, and even if they transfer their tokens.
 						</p>
 						<p>
 							The MainController manages and funds all games, and is the only contract the Treasury can send Ether to. For example, a Penny Auction requires Ether to be started - so the MainController will get funding from the Treasury and send it to the new Penny Auction. The Treasury will only fund the MainController a (relatively small) amount per day: <span class="code">dailyFundingLimit</span>. Therefore, the loss of <span class="code">dailyFundingLimit</span> per day is the worst-case scenario for PennyEther.

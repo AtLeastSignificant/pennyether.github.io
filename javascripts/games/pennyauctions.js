@@ -776,6 +776,11 @@ Loader.require("pac")
 						_GAS_PRICE_SLIDER.refresh();
 						$gasPrice.append(_GAS_PRICE_SLIDER.$e);
 						$prize.text(ethUtil.toEthStr(_curPrize));
+					},
+					onHidden: function(){
+						// fix firefox bug where tip won't reshow
+						_$sendPrizeIcon[0]._tippy.destroy();
+						initSendPrizeTip();
 					}
 				})
 			}());
@@ -800,20 +805,27 @@ Loader.require("pac")
 
 				$prizeIncr.text(bidIncrStr);
 				$addBlocks.text(addBlocksStr).attr("title", `~${addBlocksTime}`);
-				tippy(_$btn[0], {
-					// arrow: false,
-					theme: "light",
-					animation: "fade",
-					placement: "top",
-					trigger: "mouseenter",
-					html: $bidTip.show()[0],
-					onShow: function(){
-						_GAS_PRICE_SLIDER.refresh();
-						$gasPrice.append(_GAS_PRICE_SLIDER.$e);
-						$bidPrice.text(ethUtil.toEthStr(_bidPrice));
-						$prize.text(ethUtil.toEthStr(_curPrize));
-					}
-				});
+				(function attachTip(){
+					tippy(_$btn[0], {
+						// arrow: false,
+						theme: "light",
+						animation: "fade",
+						placement: "top",
+						trigger: "mouseenter",
+						html: $bidTip.show()[0],
+						onShow: function(){
+							_GAS_PRICE_SLIDER.refresh();
+							$gasPrice.append(_GAS_PRICE_SLIDER.$e);
+							$bidPrice.text(ethUtil.toEthStr(_bidPrice));
+							$prize.text(ethUtil.toEthStr(_curPrize));
+						},
+						onHidden: function(){
+							// fix firefox bug where tip wont reshow
+							_$btn[0]._tippy.destroy();
+							attachTip();
+						}
+					});
+				}());
 			}());
 		});
 	}

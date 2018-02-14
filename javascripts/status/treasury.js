@@ -302,10 +302,6 @@ Loader.require("reg", "comp", "tr")
 				</div>
 			</div>
 		`);
-		const _$amtBalance = _$e.find(".amtBalance");
-		const _$amtBankroll = _$e.find(".amtBankroll");
-		const _$amtDivThresh = _$e.find(".amtDivThresh");
-
 		const _$divBar = _$e.find(".divBar");
 		const _$fundingBar = _$e.find(".fundingBar");
 		const _$bankrollBar = _$e.find(".bankroll");
@@ -330,10 +326,6 @@ Loader.require("reg", "comp", "tr")
 
 		this.$e = _$e;
 		this.setValues = function(balance, bankroll, divThreshold){
-			_$amtBalance.text(ethUtil.toEthStr(balance));
-			_$amtBankroll.text(ethUtil.toEthStr(bankroll));
-			_$amtDivThresh.text(ethUtil.toEthStr(divThreshold));
-
 			// calculate max number, add 10%
 			const max = BigNumber.max(balance, bankroll, divThreshold).mul(1.1);
 			function toPct(val) {
