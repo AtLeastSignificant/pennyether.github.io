@@ -1402,9 +1402,9 @@
 								<a id="tokenlocker"></a>
 								<h3>The TokenLocker</h3>
 								<p>
-									The TokenLocker holds a fixed 10% stake in PennyEther. Tokens from this locker cannot be transferred or burned, and the balance is always kept at exactly 10%, even if other Token Holders burn their tokens.
+									The TokenLocker holds the PennyEther Team's 20% of ICO tokens. The Tokens vest at a rate of 1/6% per day (~5% per month) for a total of 600 days. The TokenLocker ensures tokens cannot be transferred or burned until they are vested.
 									<br><br>
-									The TokenLocker's dividends are collectable by the PennyEther team. This ensures the PennyEther team is aligned with all other Token Holders; the more profitable PennyEther is, the more we all stand to gain. It also ensures we cannot sell or transfer the tokens.
+									The dividends of the tokens are fully collectable by the PennyEther team. This ensures the PennyEther team is aligned with all other Token Holders; to have PennyEther produce more profits.
 									<p>
 										<div class="note">
 											Everything about this contract is hard coded; its behavior cannot be changed. There are no "emergency backdoors." It has been <a href="/about/contracts#dividend-token-locker" target="_blank">thoroughly tested and independantly audited</a>.
@@ -1631,7 +1631,7 @@
 											A Token Holder's amount owed is updated any time the Token receives a dividend.
 											<ul>
 												<li><b>Collect Dividends</b>: Collects the owed amount from the Token contract.</li>
-												<li><b>Burn Tokens</b>: Burns tokens in exchange for .5 Eth each. This will decrease the Total Supply, and increase ownership of all other Token Holders, except for Token Locker which always stays at 10%.</li>
+												<li><b>Burn Tokens</b>: Burns tokens in exchange for .5 Eth each. This will decrease the Total Supply, and increase ownership of all other Token Holders.</li>
 											</ul>
 										</div>
 										<div class="title tipLeft">Token Holder 1</div>
@@ -1657,7 +1657,7 @@
 											A Token Holder's amount owed is updated any time the Token receives a dividend.
 											<ul>
 												<li><b>Collect Dividends</b>: Collects the owed amount from the Token contract.</li>
-												<li><b>Burn Tokens</b>: Burns tokens in exchange for .5 Eth each. This will decrease the Total Supply, and increase ownership of all other Token Holders, except for Token Locker which always stays at 10%.</li>
+												<li><b>Burn Tokens</b>: Burns tokens in exchange for .5 Eth each. This will decrease the Total Supply, and increase ownership of all other Token Holders.</li>
 											</ul>
 										</div>
 										<div class="title tipLeft">Token Holder 2</div>
@@ -1683,7 +1683,7 @@
 											A Token Holder's amount owed is updated any time the Token receives a dividend.
 											<ul>
 												<li><b>Collect Dividends</b>: Collects the owed amount from the Token contract.</li>
-												<li><b>Burn Tokens</b>: Burns tokens in exchange for .5 Eth each. This will decrease the Total Supply, and increase ownership of all other Token Holders, except for Token Locker which always stays at 10%.</li>
+												<li><b>Burn Tokens</b>: Burns tokens in exchange for .5 Eth each. This will decrease the Total Supply, and increase ownership of all other Token Holders.</li>
 											</ul>
 										</div>
 										<div class="title tipLeft">Token Holder 3</div>
@@ -1706,9 +1706,7 @@
 									</div>
 									<div class="token-locker">
 										<div class="demo-tip">
-											The Token Locker always holds 10% of tokens. The tokens cannot be transferred or burned. The dividends are collectable by the PennyEther team.
-											<br><br>
-											When other Token Holders burn their tokens, Tokens are automatically burnt to maintain 10% ownership.
+											The Token Locker holds the PennyEther Team's ICO tokens. The tokens cannot be transferred or burned until they vest. They vest at a rate of 5% per month. For the purposes of this demo, they are not burnable.
 										</div>
 										<div class="title tipLeft">Token Locker</div>
 										<div>
@@ -2741,9 +2739,10 @@
 							We're keeping <a href="/ico/crowdsale.html" target="_blank">our crowdsale</a> as simple and as fair as possible:
 							<ul>
 								<li>There is no "registration period", "pre-sale", or "phases".</li>
+								<li>More than 66% of Ether raised bankrolls the Treasury.</li>
+								<li>Token distribution is fixed. Investors will receive 80%, developers will receive 20%.</li>
+								<li>The bonus is on a linear scale, starting at 50%, and smoothly tapering down to 0%.</li>
 								<li>Tokens will never be minted again.</li>
-								<li>Token distribution is fixed. Investors will receive 80% of all minted tokens, even if the Hard Cap is not met.</li>
-								<li>The bonus is on a linear scale, starting at 50%, and smoothly tapering down to 0% at 20,000 Ether raised.</li>
 								<li><a href="/about/contracts.html#comptroller" target="_blank">CrowdSale Contract</a>: open-source, fully tested, independantly audited</li>
 							</ul>
 						</p>
@@ -2829,13 +2828,11 @@
 											<div style='display: table'>
 												<div style='display: table-cell;'>
 													<b>80%</b><br>
-													<b>10%</b><br>
-													<b>10%</b><br>
+													<b>20%</b><br>
 												</div>
 												<div style='display: table-cell; padding-left: 5px'>
 													Sold in CrowdSale<br>
-													Given to Developers<br>
-													Frozen in <a href="#tokenlocker">TokenLocker</a>
+													Given to Developers, <a href="#tokenlocker">vesting 5% per month for 20 months.</a><br>
 												</div>
 											</div>
 											<div style='padding-left: 5px; color: gray; font-style: italic; font-size: 90%'>
@@ -2934,41 +2931,185 @@
 											</table>
 										</td>
 									</tr>
-									<tr>
-										<td class="tipLeft" title="Where the Ether will go.">
-											Funding Distribution
-										</td>
-										<td>
-											<div style='display: table'>
-												<div style='display: table-cell;'>
-													<div style='margin-bottom: 3px; white-space: nowrap;'>
-														<b>.5 ETH per Penny</b>:
-													</div>
-													<div style='margin: 3px 0px'>
-														<b>30 Ether</b>:
-													</div>
-													<div style='margin: 3px 0px'>
-														<b>Remaining</b>:
-													</div>
-												</div>
-												<div style='display: table-cell; padding-left: 5px'>
-													<div style='margin-bottom: 3px'>
-														sent as bankroll to <a href="#treasury">Treasury</a>.
-													</div>
-													<div style='margin: 3px 0px'>
-														sent to Treasury, for <a href="#treasury-dividends">14-day buffer</a>.
-													</div>
-													<div style='margin: 3px 0px'>
-
-													</div>
-													<div style='margin: 3px 0px'>
-														to be used as capital for marketing, advertising, developing, bounties, etc. See: <a href="#market-strategy">market strategy</a> and <a href="#roadmap-future">roadmap</a>.
-													</div>
-												</div>
-											</div>
-										</td>
-									</tr>
 								</table>
+							</div>
+
+							<h3>CrowdSale Distribution</h3>
+							<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+						    <script type="text/javascript">
+						    (function(){
+					    		const softCap = 25000;
+						    	const hardCap = 75000;
+						    	const bonusCap = 20000;
+						    	const amtRaised = 50000;
+						    	const dailyFundLimit = 5;
+
+						    	Loader.onPageLoad.then(init);
+
+						    	var fChart, tChart, $slider;
+						    	function init(){
+						    		google.charts.load("current", {packages:["corechart"]});
+						    		google.charts.setOnLoadCallback(initCharts);
+						    		$slider = $("#charts .slider");
+						    		$slider.attr("min", softCap);
+						    		$slider.attr("max", hardCap);
+						    		$slider.attr("step", 5000);
+						    		$slider.val(softCap);
+
+						    		const $amtEther = $("#charts .slider-ctnr .amtEther");
+						    		const $amtPenny = $("#charts .slider-ctnr .amtPenny");
+									$slider.on("input", ()=>{
+										const num = new Number($slider.val());
+										const numPenny = (bonusCap*1.25 + (num-bonusCap))*1.25;
+						    			$amtEther.text(`${num.toLocaleString()} Ether`);
+						    			$amtPenny.text(`${numPenny.toLocaleString()} Penny`);
+						    			updateCharts();
+									});
+						    	}
+						    	function initCharts(){
+						    		const fundingChart = $("#charts .funding-chart .ctnr")[0];
+						    		const tokenChart = $("#charts .token-chart .ctnr")[0];
+						    		fChart = new google.visualization.PieChart(fundingChart);
+									tChart = new google.visualization.PieChart(tokenChart);
+									$slider.trigger("input");
+						    	}
+
+						    	function updateCharts(){
+							    	const amtRaised = $slider.val();
+									const numSoldTokens = bonusCap*1.25 + (amtRaised-bonusCap);
+									const numDevTokens = Math.round(numSoldTokens * .25);
+									const bankroll = Math.round((numSoldTokens + numDevTokens) * .5);
+									const buffer = dailyFundLimit * 14;
+									const remaining = amtRaised - (bankroll + buffer);
+
+						    		updateFundingChart(bankroll+buffer, remaining);
+									updateTokenChart(numSoldTokens, numDevTokens);
+						    	}
+
+						    	function updateFundingChart(trFunding, devFunding){
+									const trStr = `${trFunding.toLocaleString()} Ether`;
+									const devStr = `${devFunding.toLocaleString()} Ether`;
+									var data = google.visualization.arrayToDataTable([
+										['Receiver', 'Amount'],
+										['Treasury', {v: trFunding, f: trStr}],
+										['Developers', {v: devFunding, f: devStr}]
+									]);
+									var options = {
+										legend: "none",
+										titlePosition: 'none',
+										slices: {
+											0: {},
+											1: {color: "#888"}
+										},
+										pieSliceText: "label",
+										chartArea: {width: "75%", height: "75%"},
+										backgroundColor: "transparent"
+									};
+									fChart.draw(data, options);
+								}
+								function updateTokenChart(numSoldTokens, numDevTokens){
+									const invStr = `${numSoldTokens.toLocaleString()} Penny`;
+									const devStr = `${numDevTokens.toLocaleString()} Penny`;
+									var data = google.visualization.arrayToDataTable([
+										['Receiver', 'Amount'],
+										['Investors', {v: numSoldTokens, f: invStr}],
+										['Developers', {v: numDevTokens, f: devStr}]
+									]);
+									var options = {
+										legend: "none",
+										titlePosition: 'none',
+										slices: {
+											0: {},
+											1: {color: "#888"}
+										},
+										pieSliceText: "label",
+										chartArea: {width: "75%", height: "75%"},
+										backgroundColor: "transparent"
+									};
+									tChart.draw(data, options);
+								}
+						    }());
+						    </script>
+						    <style>
+						    	#charts {
+						    		padding-top: 30px;
+						    		padding-bottom: 30px;
+						    		background: linear-gradient(45deg, #BBB 0%, #EEE 100%);
+						    		border-radius: 10px;
+						    	}
+								#charts .chart {
+									display: inline-block;
+									box-sizing: border-box;
+									width: 350px;
+								}
+								#charts .chart .title {
+									text-align: center;
+									font-size: 110%;
+									font-weight: bold;
+									letter-spacing: .2em;
+								}
+								#charts .chart .ctnr {
+									height: 300px;
+								}
+								#charts .slider-ctnr {
+									margin-top: 0px;
+									text-align: center;
+								}
+								#charts .slider-ctnr-2 {
+									display: inline-block;
+									padding: 10px;
+									background: linear-gradient(to top, #DDD 0%, #FFF 100%);
+									border-radius: 4px;
+									border: 1px inset #AAA;
+									/*box-shadow: 3px 3px 3px 0px rgba(0,0,0,.2);*/
+								}
+								#charts .slider-ctnr .label {
+									display: inline-block;
+									vertical-align: middle;
+									font-size: 80%;
+									text-shadow: 1px 1px 1px #EEE;
+								}
+								#charts .slider-ctnr .slider {
+									cursor: pointer;
+									width: 300px;
+									margin: 10px 5px;
+									vertical-align: middle;
+								}
+								#charts .slider-ctnr .title {
+									font-weight: bold;
+								}
+								#charts .slider-ctnr .amtEther {
+									margin-top: -5px;
+									font-size: 90%;
+									font-weight: bold;
+								}
+								#charts .slider-ctnr .amtPenny {
+									margin-top: 3px;
+									font-size: 80%;
+									color: #555;
+								}
+							</style>
+							<div id="charts">
+								<div class="chart funding-chart" style="margin: 0px 10px;">
+									<div class="title">Funding Distribution</div>
+									<div class="ctnr"></div>
+								</div>
+								<div class="chart token-chart">
+									<div class="title">Token Distribution</div>
+									<div class="ctnr"></div>
+								</div>
+								<div class="slider-ctnr">
+									<div class="slider-ctnr-2">
+										<div class="title">Amount Raised</div>
+										<div>
+											<div class="label">Soft<br>Cap</div>
+											<input class="slider" type="range" min="25000" max="75000" step="1000" value="25000">
+											<div class="label">Hard<br>Cap</div>
+										</div>
+										<div class="amtEther">&nbsp;</div>
+										<div class="amtPenny">&nbsp;</div>
+									</div>
+								</div>
 							</div>
 						</div>
 

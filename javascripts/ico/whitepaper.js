@@ -28,8 +28,8 @@ Loader.onPageLoad.then(()=>{
 
 			_$th1.data("state", {tokens: new BigNumber(80), tPct: 40, owed: ZERO, collected: ZERO});
 			_$th2.data("state", {tokens: new BigNumber(60), tPct: 30, owed: ZERO, collected: ZERO});
-			_$th3.data("state", {tokens: new BigNumber(40), tPct: 20, owed: ZERO, collected: ZERO});
-			_$tokenLocker.data("state", {tokens: new BigNumber(20), tPct: 10, owed: ZERO, collected: ZERO});
+			_$th3.data("state", {tokens: new BigNumber(20), tPct: 10, owed: ZERO, collected: ZERO});
+			_$tokenLocker.data("state", {tokens: new BigNumber(40), tPct: 20, owed: ZERO, collected: ZERO});
 
 			_$treasury.data("state",
 				{balance: new BigNumber(104), bankroll: new BigNumber(90), dl: ONE, dlUsed: ZERO});
@@ -118,7 +118,6 @@ Loader.onPageLoad.then(()=>{
 
 			const trState = _$treasury.data("state");
 			const tokenState = _$token.data("state");
-			const tlState = _$tokenLocker.data("state");
 			
 			// calculate how many tokens can be burned
 			var thTokenBurn = thState.tokens;
@@ -132,13 +131,10 @@ Loader.onPageLoad.then(()=>{
 
 			// update state of tokenHolder, treasury, token, and tokenLocker
 			_sendEth(_$treasury, $th).then(()=>{
-				const tlBurn = thTokenBurn.div(9);
-				const totalBurn = thTokenBurn.plus(tlBurn);
 				thState.tokens = thState.tokens.minus(thTokenBurn);
 				trState.bankroll = trState.bankroll.minus(thEthGain);
 				trState.balance = trState.balance.minus(thEthGain)
-				tokenState.supply = tokenState.supply.minus(totalBurn);
-				tlState.tokens = tlState.tokens.minus(tlBurn);
+				tokenState.supply = tokenState.supply.minus(thTokenBurn);
 				_$treasury.find(".status").text(`Sent ${thEthGain.toFixed(1)} Eth to user for burning tokens. Bankroll reduced.`);
 
 				// update all token holder's pcts and status
@@ -153,7 +149,6 @@ Loader.onPageLoad.then(()=>{
 					_$treasury.find(".status").append(` No balance remaining!`).addClass("error");
 					$th.find(".status").append(" Could not burn all tokens.").addClass("error");
 				}
-				_$tokenLocker.find(".status").text(`Burned tokens to stay at 10%`);
 					
 				_refresh();
 			});
@@ -533,6 +528,11 @@ Loader.onPageLoad.then(()=>{
 			_tokenHolders.forEach(($e)=>{
 				if ($e.data("state").owed.gt(0)){
 					$e.find(".btn-collect-divs").addClass("try");
+				}
+				if ($e.data("state").tokens.equals(0)) {
+					$e.find(".btn-burn").hide();
+				} else {
+					$e.find(".btn-burn").show();
 				}
 			})
 		}
