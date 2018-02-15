@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="/javascripts/lib/Loader.js"></script>
+		<style>
+		.note {
+			display: inline-block;
+			padding: 10px;
+			background: linear-gradient(to top, rgba(0,128,0,.4) 0%, rgba(0,255,0,.2) 100%);
+			border-radius: 5px;
+			text-align: center;
+			box-shadow: 3px 3px 3px 0px rgba(0,0,0,.1);
+		}
+		#Content {
+			font-size: 90%;
+		}
+		ul {
+			padding-left: 15px;
+		}
+		li {
+			margin: 5px 0px;
+			list-style: none;
+		}
+		.code {
+			background: #DDD;
+			font-family: courier;
+			padding: 2px 4px;
+		}
+		</style>
+	</head>
+	<body><div id="Content">
+		<div class="section pageTitle">
+			Audits
+		</div>
+		<div style="padding: 0px 30px">
+			<div style="text-align: center;">
+				<div class="note">
+					This page is intended for auditors to review.<br>
+					<b>It is currently a work in progress.</b>
+				</div>
+			</div>
+
+			<h3>Important Claims</h3>
+			<p>
+				<ul>
+					<b>Profits and Dividends</b>
+					<li>☐ 100% of profits - the difference between revenue received and amount funded to games - will be sent to Token Holders as dividends.</li>
+					<li>☐ Dividends are shared proportional to Token ownership at the time of distribution, and are collectable at any time, in perpetuity.</li>
+					<li>☐ Owners cannot ever prevent dividends from being sent, nor can they alter the dividend amount.</li>
+					<li>☐ Distributing dividends in limited in gas cost, and a financial incentive is in place to ensure they are frequently distributed.</li>
+
+					<br>
+					<b>Treasury Security</b>
+					<li>
+						☐ Ether can only leave the <a href="#treasury" class="code">Treasury</a> in the following cirumstances:
+						<ul>
+							<li>☐ To <a href="#dividend-token" class="code">DividendToken</a>, if there are profits.</li>
+							<li>☐ To <a href="#main-controller" class="code">MainController</a>, limited by the <a href="#treasury" class="code">Treasury</a>'s <span class="code">dailyFundLimit</span> per day.</li>
+							<li>☐ To someone burning tokens; at .5 Ether per Token, provided <a href="#treasury" class="code">Treasury</a> has a balance to afford it.</li>
+							<li>☐ To the Owners, only in case that the <a href="#crowdsale" class="code">CrowdSale</a> does not meet the <span class="code">softCap</span>.</li>
+						</ul>
+					</li>
+
+					<br>
+					<li><b>Token Burning</b></li>
+					<li>☐ Owners cannot prevent users from burning tokens.</li>
+					<li>☐ The ability to burn tokens is guaranteed, as long as Treasury balance is > bankroll.</li>
+					<li>
+						☐ All tokens are burnable for at least 14 days in the following circumstances:
+						<ul>
+							<li>☐ After the CrowdSale</li>
+							<li>☐ After any profits are sent to DividendToken</li>
+						</ul>
+					</li>
+					<li>☐ The worst case scenario is that the Treasury loses <span class="code">dailyFundLimit</span> per day.</li>
+
+					<br>
+					<li><b>Owner Responsibilities</b></li>
+					<li>
+						☐ Owners can add and remove games, and must ensure games send revenues to Treasury.
+					</li>
+					<li>
+						☐ Owners must ensure MainController properly funds games.
+					</li>
+				</ul>
+			</p>
+
+			<div style="display: none">
+				<h3>Treasury</h3>
+				<p>
+					<b>The following addresses are permanent and cannot be changed:</b>
+					<ul>
+						<li>☐ <a href="#token" class="code">token</a></li>
+						<li>☐ <a href="#comptroller" class="code">comptroller</a></li>
+					</ul>
+				</p>
+
+				<p>
+					<b>The following addresses can be changed via the <a href="#registry" class="code">Registry</a>:</b>
+					<ul>
+						<li>☐ <span class="code">admin</span></li>
+						<li>☐ <span class="code">mainController</span></li>
+					</ul>
+				</p>
+
+				<p>
+					<b>dailyFundLimit</b>
+					<ul>
+						<li>☐ Can be initially set by <span class="code">admin</span> to any value</li>
+						<li>☐ Can be altered by <span class="code">admin</span> by up to +/-5% per day</li>
+					</ul>
+				</p>
+
+				<p>
+					<b>distributeRewardDenom</b>
+					<ul>
+						<li>☐ This value determines what % of dividends are sent as a reward to the caller of <span class="code">.distributeToToken()</span></li>
+						<li>☐ This value is settable by <span class="code">admin</span>, and be between .01% and 1%</li>
+					</ul>
+				</p>
+
+				<p>
+					<b>Only sends Ether in the following circumstances:</b>
+					<ul>
+						<li>☐ To DividendToken, if there are profits.</li>
+						<li>☐ To MainController, limited by the Treasury's <span class="code">dailyFundLimit</span> per day.</li>
+						<li>☐ To someone burning tokens; at .5 Ether per Token, provided Treasury has a balance to afford it.</li>
+						<li>☐ To the Owners, only in case that the CrowdSale does not meet the softCap.</li>
+					</ul>
+				</p>
+
+				<p>
+					<b>.distributeToToken()</b>
+					<ul>
+						<li>☐ A reward of .01% - 1% of profits is sent to the caller of this function, providing a financial incentive for it to be called.</li>
+						<li>☐ The remaining profits are sent to the DividendToken.</li>
+						<li>☐ This function has a limited gas cost.</li>
+						<li>☐ It is reasonable to believe that should profits exist they will frequently be sent to DividendToken.</li>
+					</ul>
+				</p>
+
+				<h3>Comptroller / CrowdSale <a href="/about/contracts.html#comptroller">contract info</a></h3>
+				<p>
+					Initially:
+					<ul>
+						<li>☐ Does not allow Treasury funds to be removed.</li>
+						<li>☐ Initially gives owner 100% of Tokens (1e-18 tokens).</li>
+						<li>☐ Allows owner to change CrowdSale parameters, unless the CrowdSale has already started.</li>
+					</ul>
+				</p>
+				<p>
+					During CrowdSale:
+					<ul>
+						<li>☐ Mints 1 Token per 1 Ether, plus bonus (described below)</li>
+						<li>☐ Bonus period works as intended: 50% bonus linearly decays to 0% at <span class="code">bonusCap</span>.</li>
+						<li>☐ Refunds any extra Ether sent if hardCap is met.</li>
+					</ul>
+				</p>
+				<p>
+					After CrowdSale:
+					<ul>
+						<li></li>
+					</ul>
+				</p>
+			</div>
+		</div>
+	</div></body>
+</html>

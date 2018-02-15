@@ -249,18 +249,20 @@
 						$pa2.removeClass("show");
 						$instadice.removeClass("show");
 						$extra.css({opacity: 0});
+						$crowdsale.css({opacity: ""});
+						$txtBankroll.hide();
 						$txtDivThresh.hide();
 						$dfl.hide();
 						nextStep();
 					}
 					function nextStep(){
 						const next = steps[step];
-						if (!next) reset();
+						if (!next) return reset();
 						steps[step]();
 						step++;
 					}
 					function wait(timeMs){
-						$statusBtn.attr("disabled", "disabled").css("opacity", .2);
+						$statusBtn.attr("disabled", "disabled").css("opacity", .4);
 						return new Promise((res,rej)=>{
 							setTimeout(()=>{
 								$statusBtn.removeAttr("disabled", "disabled").css("opacity","");
@@ -273,15 +275,28 @@
 							updateBar();
 							$statusBtn.text("Continue");
 							$statusTxt.empty()
-								.append(`Prior to the CrowdSale, the Treasury will have zero bankroll.<br>
-										It will be funded by the owners.`);
+								.append(`Prior to the CrowdSale, the Treasury will be funded by the owners.<br>
+										The owners will fund the Treasury so that games can be run.`);
 						},
 						function step0b() {
+							balance = balance.plus(100e18);
+							updateBar();
+							wait(2000).then(()=>{
+								$statusBtn.text("Continue");
+								$statusTxt.empty()
+									.append(`In this example, the owners have added 100 Ether to the Treasury.<br>
+											The owners have full control over this Ether, until the CrowdSale starts.<br>
+											<b>Let's start the CrowdSale!</b>`);
+							});
+						},
+						function step0b() {
+							$txtBankroll.show();
+							setTimeout(()=>$txtBankroll.addClass("on"),100);
 							$statusBtn.text("Start CrowdSale");
 							$statusTxt.empty()
-								.append(`The CrowdSale will send .5 Ether per Token to the Treasury.<br>
-										 These funds will be used as <span class="code">bankroll</span>.<br>
-										 In this example, the CrowdSale mints 1,000 tokens.`);
+								.append(`The CrowdSale will fund the Treasury with .5 Ether per Token minted, as <span class="code">bankroll</span>.<br>
+									 	In this example, the CrowdSale mints 1000 Tokens, so the bankroll will be <span class="code">500 Ether</span>.`);
+							
 						},
 						function step1(){
 							const invOffset = $investors.offset();
@@ -303,9 +318,9 @@
 								_sendEth(csPt, trPt, true, true);
 								return wait(1000);
 							}).then(()=>{
-								bankroll = bankroll.plus(500e18);
-								balance = balance.plus(500e18);
-								divThreshold = divThreshold.plus(500e18);
+								bankroll = new BigNumber(500e18);
+								balance = new BigNumber(500e18);
+								divThreshold = new BigNumber(500e18);
 								updateBar();
 								return wait(2500);
 							}).then(()=>{
@@ -314,7 +329,6 @@
 									.append(`The <span class="code">bankroll</span> is now 500 Ether.<br>
 											As long as the Treasury balance is above this value,<br>
 											all tokens can be burned for refund of .5 Ether each.`);
-								$txtBankroll.addClass("on");
 							});
 						},
 						function step2(){
@@ -342,7 +356,7 @@
 							}).then(()=>{
 								$statusBtn.text("Finish CrowdSale");
 								$statusTxt.empty()
-									.append(`Notice the Dividend Threshold marker.<br>`)
+									.append(`Notice the <span class="code">Dividend Threshold</span> marker.<br>`)
 									.append(`Its value is hardcoded to <span class="code">bankroll + 14 * dailyFundingLimit</span>.<br>`)
 									.append(`Any balance above this is considered profit, and will be sent to DividendToken.<br>`)
 									.append(`<b>The CrowdSale will send Ether to meet this amount.</b>`);
@@ -371,6 +385,7 @@
 							$txtBalance.removeClass("on");
 							$txtBankroll.removeClass("on");
 							$dflValue.removeClass("on");
+							$crowdsale.css("opacity", .5);
 							wait(1000).then(()=>{
 								$statusBtn.text("Start a Penny Auction");
 								$statusTxt.empty()
@@ -392,12 +407,18 @@
 								_sendEth(start, stop, true, true);
 								return wait(1000);
 							}).then(()=>{
-								$statusBtn.text("Collect Revenue");
+								$statusBtn.text("Continue");
 								$statusTxt.empty()
 									.append(`Treasury balance has decreased by 5 Ether.<br>
-											The Penny Auction will periodically send its revenue to Treasury.<br>
-											Ideally, it produces more than 5 Ether in revenue.`);
+											The Treasury will not be able to fund any other games until the next day.<br>`);
 							});
+						},
+						function step6b(){
+							$statusBtn.text("Collect Revenue");
+							$statusTxt.empty()
+								.append(`The Penny Auction will periodically send its revenue to Treasury.<br>
+											Ideally, it produces more than 5 Ether in revenue.<br>
+											<b>In this example, let's assume it collects 10 Ether</b>.`);
 						},
 						function step7(){
 							const paOffset = $pa1.offset();
@@ -419,9 +440,9 @@
 								$statusBtn.text("Distribute Profits");
 								$statusTxt.empty()
 									.append(`<b>The Treasury now has a profit!</b><br>
-											Profits will get distributed to the DividendToken.<br>
-											There is no "distribution period" - dividends can happen at any time.<br>
-											Investors will be able to collect their share, at any time, forever.<br>
+											Profits get distributed <i>only</i> to the DividendToken.<br>
+											Dividends can happen at any time, there is are no "distribution periods".<br>
+											Investors will be able to collect their profit share, at any time, forever.<br>
 											`);
 							});
 						},
@@ -447,14 +468,17 @@
 								}
 								return wait(3000);
 							}).then(()=>{
+								$txtDivThresh.addClass("on");
 								$statusBtn.text("Continue");
 								$statusTxt.empty()
 									.append(`The Treasury has distributed profits.<br>
+										When profits are distributed, Treasury balance will drop to <span class="code">Dividend Threshold</span>.<br>
 										All tokens are still burnable for at least 14 days.`);
 							});
 						},
 						function step9(){
 							$txtBalance.removeClass("on");
+							$txtDivThresh.removeClass("on");
 							$statusBtn.text("Start another auction");
 							$statusTxt.empty()
 								.append(`More than one Penny Auction can be started at once.<br>
@@ -475,14 +499,52 @@
 								_sendEth(start, stop, true, true);
 								return wait(1000);
 							}).then(()=>{
-								$statusBtn.text("Add another Game Type");
+								$statusBtn.text("Continue");
 								$statusTxt.empty()
-									.append(`PennyEther was designed with scalability in mind.<br>
-										New game types can be easily added.<br>
-										<b>Let's add another Game Type</b>`);
+									.append(`A second Penny Auction is now running!`);
 							});
 						},
-						function step11(){
+						function step10a(){
+							$pa1.addClass("ended");
+							$statusBtn.text("Continue");
+							$statusTxt.empty()
+								.append(`When a Penny Auction completes, it must be "finalized".<br>
+										Finalizing a Penny Auction pays the winner, and allows it to be restarted.<br>
+										`);
+						},
+						function step10b(){
+							$statusBtn.text("End and Restart Auction");
+							$statusTxt.empty()
+								.append(`Both finalizing and restarting a Penny Auction are autonomous:<br>
+										Any user can finalize and restart a Penny Auction, and is paid a reward to do so.<br>
+										This ensures Penny Auctions run autonomously, without owner intervention.`);
+						},
+						function step10c(){
+							balance = balance.minus(5e18);
+							updateBar();
+							wait(2000).then(()=>{
+								const paOffset = $pa1.offset();
+								const start = {x: paOffset.left+20, y: paOffset.top-100};
+								const stop = {x: start.x, y: paOffset.top+20};
+								_sendEth(start, stop, true, true);
+								return wait(1000);
+							}).then(()=>{
+								$pa1.removeClass("ended");
+								return wait(1000);
+							}).then(()=>{
+								$statusBtn.text("Continue");
+								$statusTxt.empty()
+									.append(`The Penny Auction has been finalized and restarted.`);
+							});
+						},
+						function step11a(){
+							$statusBtn.text("Continue");
+							$statusTxt.empty()
+								.append(`PennyEther was designed with scalability in mind.<br>
+										New game types can be easily added.<br>
+										<b>Let's add another Game Type</b>`)
+						},
+						function step11b(){
 							$instadice.addClass("show");
 							wait(1000).then(()=>{
 								$statusBtn.text("Fund InstaDice");
@@ -505,8 +567,8 @@
 								$statusBtn.text("Collect Profits");
 								$statusTxt.empty()
 									.append(`We now have many sources of revenue.<br>
-										Revenue is collected periodically, either automatically, <br>
-										or by incentivizing users to run Tasks that will collect it.<br>`);
+										PennyEther rewards user to run Tasks that will collect the revenues.<br>
+										This ensures revenues are collected autonomously, without owner intervention.`);
 							});
 						},
 						function step13(){
@@ -545,7 +607,7 @@
 
 							wait(2000).then(()=>{
 								$txtBalance.addClass("on");
-								balance = balance.plus(20e18);
+								balance = balance.plus(25e18);
 								updateBar();
 								return wait(2000);
 							}).then(()=>{
@@ -554,11 +616,12 @@
 								return wait(1000)
 							}).then(()=>{
 								const invOffset = $investors.offset();
+								const invHeight = $investors.height();
 								const tokenOffset = $token.offset();
 								const tokenPt = {x: tokenOffset.left + 20, y: tokenOffset.top + 10}
 								const invPt = {x: invOffset.left + 20, y: tokenPt.y};
 								const trPt = {x: tokenPt.x, y: tokenPt.y - 100};
-								balance = balance.minus(10e18);
+								balance = divThreshold;
 								updateBar();
 								wait(2000).then(()=>{
 									_sendEth(trPt, tokenPt);
@@ -566,7 +629,7 @@
 								}).then(()=>{
 									$txtBalance.removeClass("on");
 									for (var i=0; i<20; i++){
-										const start = {x: tokenPt.x, y: tokenOffset.top + Math.random()*40};
+										const start = {x: tokenPt.x, y: tokenOffset.top+Math.random()*invHeight};
 										const stop = {x: invPt.x, y: start.y};
 										setTimeout(()=>{
 											_sendEth(start, stop, true, true, 10);
@@ -693,10 +756,14 @@
 				font-size: 80%;
 				font-weight: bold;
 				opacity: 0;
-				transition: opacity 1s;
+				transition: opacity 1s, background 1s;
 			}
 			#tr-sim .contract.show {
 				opacity: 1;
+			}
+			#tr-sim .contract.ended {
+				opacity: .5;
+				background: linear-gradient(to bottom, #FFE 0%, #FFC 100%);
 			}
 			#tr-sim .contract > div {
 				display: table;
@@ -720,7 +787,7 @@
 				max-width: 800px;
 			}
 			#tr-sim .status .code {
-				background: rgba(0,0,255,.8);
+				background: rgba(0,0,255,.5);
 				color: white;
 			}
 			#tr-sim .status .left {
@@ -741,6 +808,7 @@
 				color: blue;
 				cursor: pointer;
 				white-space: nowrap;
+				transition: opacity .5s;
 			}
 			#tr-sim .on {
 				background: blue;

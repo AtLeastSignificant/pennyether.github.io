@@ -79,6 +79,9 @@
 						url: "/test-results/index.html"
 					}]
 				},{
+					name: "Audits",
+					url: "/about/audits.html"
+				},{
 					name: "Contact",
 					url: "/about/contact.html"
 				}]
